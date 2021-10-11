@@ -45,10 +45,11 @@ fish <- read_delim(here("data", "raw_data", "transects", "Peces 2006-2019(24feb2
                              species == "Mariposa spp" ~ "Chaetodon spp",
                              species == "Pluma spp" ~ "Calamus spp",
                              species == "Vieja spp" ~ "Lachnolaimus maximus",
-                             species == "Xcochin spp" ~ "Balistes",
+                             species == "Xcochin spp" ~ "Balistes spp",
                              species == "Kyphosus sectatrix/incisor" ~ "Kyphosus spp",
-                             species == "Pterois volitans/miles" ~ "Pterois spp",
+                             species == "Pterois volitans/miles" ~ "Pterois volitans",
                              species == "Macrostomum melanurum" ~ "Haemulon macrostomum",
+                             species == "Xenistius californiensis" ~ "Haemulon californiensis",
                              T ~ species)) %>% 
   filter(!species == "Nd") %>% 
   mutate(genus = str_extract(species, "[:alpha:]+"))

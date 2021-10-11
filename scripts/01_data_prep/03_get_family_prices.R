@@ -67,7 +67,7 @@ prices <- landings %>%
                             main_species_group == "PIERNA" ~ "Malacanthidae",
                             main_species_group == "CABRILLA" ~ "Serranidae",
                             main_species_group == "MERO" ~ "Serranidae",
-                            main_species_group == "RUBIA Y VILLAJAIBA" ~ "Luthanidae",
+                            main_species_group == "RUBIA Y VILLAJAIBA" ~ "Lutjanidae",
                             main_species_group == "ESMEDREGAL" ~ "Rachycentridae",
                             main_species_group == "ATUN" ~ "Scombridae",
                             main_species_group == "RONCO" ~ "Haemulidae",

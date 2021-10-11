@@ -31,24 +31,33 @@ alo_spp <- length_weight(species_list = spp_list) %>%
   select(species, a, b) %>% 
   group_by(species) %>% 
   summarize(a = mean(a, na.rm = T),
-            b = mean(b, na.rm = T),
-            n = n()) %>% 
+            b = mean(b, na.rm = T)) %>% 
   left_join(abnt, by = "species") %>% 
   mutate(a = coalesce(a, a_mpa),
          b = coalesce(b, b_mpa)) %>% 
-  select(species, a, b, n)
+  select(species, a, b)
 
-alo_genus <- alo_spp %>% 
+alo_bayes <- estimate(species_list = spp_list) %>% 
+  clean_names() %>% 
+  select(species, a_bayes = a, b_bayes = b)
+
+alo_spp_bayes <- alo_spp %>% 
+  left_join(alo_bayes, by = c("species")) %>% 
+  mutate(a = coalesce(a, a_bayes),
+         b = coalesce(b, b_bayes)) %>% 
+  select(species, a, b)
+
+alo_genus <- alo_spp_bayes %>% 
   mutate(genus = str_extract(species, "[:alpha:]+")) %>% 
   group_by(genus) %>% 
-  summarize(a_g = weighted.mean(a, na.rm = T, w = n),
-         b_g = weighted.mean(b, na.rm = T, w = n)) %>% 
+  summarize(a_g = mean(a, na.rm = T),
+            b_g = mean(b, na.rm = T)) %>% 
   ungroup()
 
 length_weight <- clean_fish %>% 
   select(genus, species) %>% 
   distinct() %>% 
-  left_join(alo_spp, by = "species") %>% 
+  left_join(alo_spp_bayes, by = "species") %>% 
   left_join(alo_genus, by = "genus") %>% 
   mutate(a = coalesce(a, a_g),
          b = coalesce(b, b_g)) %>% 
