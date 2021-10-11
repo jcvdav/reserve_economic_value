@@ -30,9 +30,7 @@ fish <- read_delim(here("data", "raw_data", "transects", "Peces 2006-2019(24feb2
          species = especie, 
          size = talla, 
          abundance = abundancia) %>% 
-  filter(zone == "Reserva") %>% 
   filter(!str_detect(species, "Phoca|Zalophus")) %>% 
-  select(-zone) %>% 
   mutate(size = as.numeric(ifelse(size == "ND", NA_character_, size)),
          abundance = as.numeric(ifelse(abundance == "ND", 0, abundance)),
          species = str_remove_all(species, "\xa0"),

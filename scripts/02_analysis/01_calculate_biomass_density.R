@@ -9,10 +9,12 @@
 library(here)
 library(rfishbase)
 library(MPAtools)
+library(cowplot)
 library(tidyverse)
 
 # Load data
-clean_fish <- read_csv(file = here("data", "processed_data", "clean_fish_transects.csv"))
+clean_fish <- read_csv(file = here("data", "processed_data", "clean_fish_transects.csv")) %>% 
+  filter(zone == "Reserva")
 lw <- read_csv(file = here("data", "processed_data", "length_weight_parameters.csv"))
 family <- read_csv(file = here("data", "processed_data", "family_names.csv"))
 prices <- read_csv(file = here("data", "processed_data", "family_prices.csv"))
