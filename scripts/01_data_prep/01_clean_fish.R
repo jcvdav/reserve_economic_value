@@ -20,6 +20,7 @@ fish <- read_delim(here("data", "raw_data", "transects", "Peces 2006-2019(24feb2
          state = estado, 
          community = comunidad, 
          site = sitio, 
+         diver = monitor,
          lat = latitud, 
          lon = longitud, 
          habitat = habitat, 
