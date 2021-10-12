@@ -50,6 +50,10 @@ fish <- read_delim(here("data", "raw_data", "transects", "Peces 2006-2019(24feb2
                              species == "Macrostomum melanurum" ~ "Haemulon macrostomum",
                              species == "Xenistius californiensis" ~ "Haemulon californiensis",
                              T ~ species)) %>% 
+  mutate(site = str_replace_all(site, "\xf1", "n"),
+         site = stringi::stri_enc_toutf8(site),
+         site = str_to_sentence(site),
+         site = str_trim(site)) %>% 
   filter(!species == "Nd") %>% 
   mutate(genus = str_extract(species, "[:alpha:]+"))
 

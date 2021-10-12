@@ -81,7 +81,8 @@ drop_na(value) %>%
   drop_na(landed_weight) %>%
   mutate(price = value / landed_weight) %>%
   group_by(family) %>%
-  summarize(price = mean(price, na.rm = T))
+  summarize(mean_price = mean(price, na.rm = T),
+            median_price = median(price, na.rm = T))
 
 write_csv(x = prices,
           file = here("data", "processed_data", "family_prices.csv"))
