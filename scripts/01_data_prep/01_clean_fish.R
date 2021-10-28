@@ -53,7 +53,13 @@ fish <- read_delim(here("data", "raw_data", "transects", "Peces 2006-2019(24feb2
   mutate(site = str_replace_all(site, "\xf1", "n"),
          site = stringi::stri_enc_toutf8(site),
          site = str_to_sentence(site),
-         site = str_trim(site)) %>% 
+         site = str_remove_all(site, "Zrp"),
+         site = str_remove_all(site, "norte|sur|\\(control\\)"),
+         site = str_trim(site),
+         site = case_when(site == "40canones2" ~ "40 canones",
+                          site == "40canones2control" ~ "40 canones",
+                          site == "40 canones control" ~ "40 canones",
+                          T ~ site)) %>% 
   filter(!species == "Nd") %>% 
   mutate(genus = str_extract(species, "[:alpha:]+"))
 

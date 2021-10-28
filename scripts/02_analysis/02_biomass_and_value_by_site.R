@@ -90,16 +90,6 @@ biomass_by_site %>%
   ggtitle(label = "Mean biomass by economic group")
 
 
-p3 <- prices %>% 
-  mutate(family = fct_reorder(family, mean_price)) %>% 
-  ggplot(aes(x = family, y = mean_price)) +
-  geom_col(fill = "steelblue", color = "black") + 
-  geom_point(aes(y = median_price)) +
-  coord_flip() +
-  labs(x = "Taxonomic Family", y = "Price (MXN $ / Kg)") +
-  ggtitle("Family prices") +
-  theme_bw()
-
 p4 <- biomass_by_site %>% 
   filter(economic == "Fisheries value") %>% 
   ggplot(aes(x = community, y = value_mxp_hect, fill = economic)) +
