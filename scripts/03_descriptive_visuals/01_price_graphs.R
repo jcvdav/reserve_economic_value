@@ -20,7 +20,9 @@ family_prices <-
   read_csv(file = here("data", "processed_data", "family_prices.csv"))
 
 ts_plot <-
-  ggplot(prices, aes(x = year_cut, y = def_price, color = family)) +
+  prices %>% 
+  mutate(family = fct_reorder(family, def_price, mean, .desc = T)) %>%
+  ggplot(aes(x = year_cut, y = def_price, color = family)) +
   stat_summary(fun = "mean", geom = "line", size = 1) +
   labs(x = "Año", y = bquote("Precio promedio ($"[2019] ~ "/ Kg)")) +
   theme_bw() +
