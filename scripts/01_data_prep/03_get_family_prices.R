@@ -20,7 +20,6 @@ mex_cpi <- read_csv(here("data", "processed_data", "mex_cpi.csv"))
 
 drop_spp <-
   c(
-    "ABULON",
     "ALGAS",
     "ALMEJA",
     "ANCHOVETA",
@@ -33,18 +32,15 @@ drop_spp <-
     "CAZON",
     "CHARAL",
     "CINTILLA",
-    "ERIZO",
     "ESPECIE GENERICA",
     "FAUNA",
     "JAIBA",
-    "LANGOSTA",
     "LANGOSTINO",
     "LENGUADO",
     "LOBINA",
     "OSTION",
     "OTRAS",
     "PECES DE ORNATO",
-    "PEPINO DE MAR",
     "PULPO",
     "RAYA Y SIMILARES",
     "RUBIO",
@@ -53,6 +49,8 @@ drop_spp <-
     "TIBURON",
     "TRUCHA"
   )
+
+inverts <- c("Haliotidae", "Strongylocentrotidae", "Palinuridae", "Holothuriidae")
 
 # PROCESS ######################################################################
 
@@ -86,8 +84,13 @@ prices <- landings %>%
       main_species_group == "BARRILETE" ~ "Scombridae",
       main_species_group == "BONITO" ~ "Scombridae",
       main_species_group == "BAQUETA" ~ "Serranidae",
-      main_species_group == "MACARELA" ~ "Scombridae"
-    )
+      main_species_group == "MACARELA" ~ "Scombridae",
+      main_species_group == "ABULON" ~ "Haliotidae",
+      main_species_group == "ERIZO" ~ "Strongylocentrotidae",
+      main_species_group == "LANGOSTA" ~ "Palinuridae",
+      main_species_group == "PEPINO DE MAR" ~ "Holothuriidae"
+    ),
+    group = ifelse(family %in% inverts, "Invertebrado", "Escama")
   ) %>%
   drop_na(value) %>%
   drop_na(landed_weight) %>%
@@ -98,7 +101,7 @@ prices <- landings %>%
 
 # Calculate mean value
 family_prices <- prices %>%
-  group_by(family) %>%
+  group_by(family, group) %>%
   summarize(
     mean_price = mean(def_price, na.rm = T),
     median_price = median(def_price, na.rm = T)

@@ -22,28 +22,31 @@ family_prices <-
 ts_plot <-
   prices %>% 
   mutate(family = fct_reorder(family, def_price, mean, .desc = T)) %>%
-  ggplot(aes(x = year_cut, y = def_price, color = family)) +
+  ggplot(aes(x = year_cut, y = def_price, color = family, linetype = group)) +
   stat_summary(fun = "mean", geom = "line", size = 1) +
   labs(x = "Año", y = bquote("Precio promedio ($"[2019] ~ "/ Kg)")) +
   theme_bw() +
-  guides(color = guide_legend("Familia")) +
+  guides(color = guide_legend("Familia"),
+         linetype = guide_legend("Grupo")) +
   scale_color_viridis_d()
 
 values_plot <- family_prices %>%
   mutate(family = fct_reorder(family, mean_price)) %>%
-  ggplot(aes(x = family, y = mean_price)) +
-  geom_col(fill = "steelblue", color = "black") +
+  ggplot(aes(x = family, y = mean_price, fill = group)) +
+  geom_col(color = "black") +
   geom_point(aes(y = median_price)) +
   coord_flip() +
+  scale_fill_brewer(palette = "Set1", direction = 01) +
   labs(x = "Familia", y = "Precio ($ / Kg)") +
-  theme_bw()
+  theme_bw() +
+  guides(fill = guide_legend("Grupo"))
 
 # EXPORT PLOTS #################################################################
 ggsave(
   plot = ts_plot,
   filename = here("results", "img", "family_prices_timeseries.pdf"),
-  width = 8,
-  height = 4
+  width = 10,
+  height = 5.5
 )
 
 ggsave(
