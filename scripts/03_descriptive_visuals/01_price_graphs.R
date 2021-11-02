@@ -20,9 +20,14 @@ family_prices <-
   read_csv(file = here("data", "processed_data", "family_prices.csv"))
 
 ts_plot <-
-  prices %>% 
+  prices %>%
   mutate(family = fct_reorder(family, def_price, mean, .desc = T)) %>%
-  ggplot(aes(x = year_cut, y = def_price, color = family, linetype = group)) +
+  ggplot(aes(
+    x = year,
+    y = def_price,
+    color = family,
+    linetype = group
+  )) +
   stat_summary(fun = "mean", geom = "line", size = 1) +
   labs(x = "Año", y = bquote("Precio promedio ($"[2019] ~ "/ Kg)")) +
   theme_bw() +
@@ -39,7 +44,12 @@ values_plot <- family_prices %>%
   scale_fill_brewer(palette = "Set1", direction = 01) +
   labs(x = "Familia", y = "Precio ($ / Kg)") +
   theme_bw() +
-  guides(fill = guide_legend("Grupo"))
+  guides(fill = guide_legend("Grupo")) +
+  theme(
+    legend.justification = c(1, 0),
+    legend.position = c(1, 0),
+    legend.background = element_blank()
+  )
 
 # EXPORT PLOTS #################################################################
 ggsave(

@@ -1,7 +1,7 @@
 ######################################################
 #title#
 ######################################################
-# 
+#
 # Purpose
 #
 ######################################################
@@ -9,45 +9,114 @@
 library(here)
 library(tidyverse)
 
-biomass <- read_csv(here("data", "processed_data", "biomass_by_species.csv"))
-family <- read_csv(file = here("data", "processed_data", "family_names.csv"))
-prices <- read_csv(file = here("data", "processed_data", "family_prices.csv"))
+fish_biomass <-
+  read_csv(here("data", "processed_data", "fish_biomass_by_species.csv"))
+invert_biomass <-
+  read_csv(here(
+    "data",
+    "processed_data",
+    "invertebrate_biomass_by_species.csv"
+  ))
+family <-
+  read_csv(file = here("data", "processed_data", "family_names.csv"))
+prices <-
+  read_csv(file = here("data", "processed_data", "family_prices.csv"))
+costs <-
+  read.csv(here("data", "raw_data", "reserve_cost_per_hectare.csv")) %>% 
+  mutate(cost_mxp_ha = cost_usd_ha * 19.2472) %>% 
+  select(community, cost_mxp_ha)
 
-biomass_value <- biomass %>% 
-  filter(zone == "Reserva") %>% 
-  filter(biomass_kg_hect > 0) %>% 
-  left_join(family, by = c("species", "genus")) %>% 
-  left_join(prices, by = c("family", "group")) %>% 
-  replace_na(replace = list("mean_price" = 0,
-                            "median_price" = 0)) %>% 
-  mutate(economic = ifelse(mean_price > 0, "Fisheries value", "No fisheries value"),
-         value_mxp_hect = mean_price * biomass_kg_hect) 
-  
-biomass_by_community <- biomass_value %>% 
-  group_by(year, community, site, zone, economic, group, transect) %>% 
-  summarize(biomass_kg_hect = sum(biomass_kg_hect, na.rm = T),
-            value_mxp_hect = sum(value_mxp_hect, na.rm = T)) %>% 
-  group_by(community, group, economic) %>% 
-  summarize(biomass_kg_hect_sd = sd(biomass_kg_hect, na.rm = T),
-            biomass_kg_hect = median(biomass_kg_hect, na.rm = T),
-            value_mxp_hect_sd = sd(value_mxp_hect, na.rm = T),
-            value_mxp_hect = median(value_mxp_hect)) %>% 
-  ungroup() %>% 
-  mutate(community = fct_reorder(community, value_mxp_hect)) 
+fish_biomass_value <- fish_biomass %>%
+  # filter(biomass_kg_hect > 0) %>%
+  left_join(family, by = c("species", "genus")) %>%
+  left_join(prices, by = c("family", "group")) %>%
+  mutate(value_mxp_hect = mean_price * biomass_kg_hect) %>%
+  select(-c(genus,species))
 
-biomass_by_community %>% 
-  filter(value_mxp_hect > 0) %>% 
-  ggplot(aes(x = community, y = value_mxp_hect)) +
-  geom_errorbar(aes(ymin = value_mxp_hect, ymax = value_mxp_hect + value_mxp_hect_sd), width = 0.25) +
-  geom_col(fill = "steelblue", color = "black") +
+invert_biomass_value <- invert_biomass %>%
+  # filter(biomass_kg_hect > 0) %>%
+  left_join(prices, by = c("family", "group")) %>%
+  mutate(value_mxp_hect = mean_price * biomass_kg_hect) 
+
+biomass_value <- rbind(fish_biomass_value, invert_biomass_value) 
+
+biomass_by_community <- biomass_value %>%
+  drop_na(mean_price) %>%
+  group_by(community, site, zone, group, transect) %>%
+  summarize(
+    biomass_kg_hect = sum(biomass_kg_hect, na.rm = T),
+    value_mxp_hect = sum(value_mxp_hect, na.rm = T) / 1000
+  ) %>%
+  group_by(community, zone, group) %>%
+  summarize(
+    biomass_kg_hect_sd = sd(biomass_kg_hect, na.rm = T),
+    biomass_kg_hect = mean(biomass_kg_hect, na.rm = T),
+    value_mxp_hect_sd = sd(value_mxp_hect, na.rm = T),
+    value_mxp_hect = mean(value_mxp_hect)
+  ) %>%
+  ungroup() %>%
+  mutate(community = fct_reorder(community, value_mxp_hect, sum))
+
+
+tot_val <- biomass_by_community %>%
+  filter(zone == "Reserva") %>%
+  ggplot(aes(x = community, y = value_mxp_hect, fill = group)) +
+  geom_errorbar(aes(ymin = value_mxp_hect, ymax = value_mxp_hect + value_mxp_hect_sd),
+                position = "dodge") +
+  geom_col(color = "black", position = "dodge") +
+  scale_fill_brewer(palette = "Set1", direction = -1) +
   theme_bw() +
   coord_flip() +
-  labs(x = "Comunidad", y = "Valor (MXP / hect)")
-  
+  labs(x = "Comunidad", y = "Valor (1,000 MXP / ha)") +
+  guides(fill = guide_legend("Grupo")) +
+  theme(
+    legend.justification = c(1, 0),
+    legend.position = c(1, 0),
+    legend.background = element_blank()
+  )
 
-ggplot(biomass_by_community, aes(x = community, y = biomass_kg_hect, fill = economic)) +
-  geom_point(#range(aes(ymin = biomass_kg_hect - biomass_kg_hect_sd, ymax = biomass_kg_hect + biomass_kg_hect_sd),
-                  position = position_dodge(0.5),
-                  shape = 21, size = 1) +
-  scale_fill_brewer(palette = "Set1") +
-  coord_flip()
+sust_val <- biomass_by_community %>%
+  select(community, group, zone, value_mxp_hect) %>%
+  pivot_wider(names_from = zone, values_from = value_mxp_hect) %>%
+  mutate(res = pmin(Control, 0.5 * Reserva),
+         dif = Reserva - res) %>%
+  ggplot(aes(x = community, y = dif, fill = group)) +
+  geom_col(color = "black", position = "dodge") +
+  scale_fill_brewer(palette = "Set1", direction = -1) +
+  theme_bw() +
+  coord_flip() +
+  labs(x = "Comunidad", y = "Valor (1,000 MXP / ha)") +
+  guides(fill = guide_legend("Grupo")) +
+  theme(
+    legend.justification = c(1, 0),
+    legend.position = c(1, 0),
+    legend.background = element_blank()
+  )
+
+biomass_by_community %>%
+  select(community, group, zone, value_mxp_hect) %>%
+  pivot_wider(names_from = zone, values_from = value_mxp_hect) %>%
+  mutate(Res50 = 0.5 * Reserva,
+         diff = Reserva - min(Control, Res50)) %>% 
+  group_by(community) %>% 
+  summarize(value = sum(diff)) %>% 
+  left_join(costs, by = "community") %>% 
+  knitr::kable(col.names = c("Comunidad", "Valor (MXP / hac)", "Costo (MXP / ha)"),
+               format = "latex") %>% 
+  cat(file = here("results", "tab", "valor_y_costo.tex"))
+
+
+ggsave(
+  tot_val,
+  filename = here("results", "img", "total_value_per_hectare.pdf"),
+  width = 8,
+  height = 4
+)
+
+
+ggsave(
+  sust_val,
+  filename = here("results", "img", "sustainable_value_per_hectare.pdf"),
+  width = 8,
+  height = 4
+)

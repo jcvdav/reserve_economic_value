@@ -47,7 +47,8 @@ drop_spp <-
     "SARDINA",
     "SARGAZO",
     "TIBURON",
-    "TRUCHA"
+    "TRUCHA",
+    "GUACHINANGO"
   )
 
 inverts <- c("Haliotidae", "Strongylocentrotidae", "Palinuridae", "Holothuriidae")
@@ -58,14 +59,14 @@ inverts <- c("Haliotidae", "Strongylocentrotidae", "Palinuridae", "Holothuriidae
 prices <- landings %>%
   filter(!main_species_group %in% drop_spp) %>%
   filter(year_cut <= 2019) %>%
-  select(year_cut, main_species_group, landed_weight, value) %>%
+  select(year = year_cut, main_species_group, landed_weight, value) %>%
   mutate(
     family = case_when(
       main_species_group == "LISA" ~ "Mugilidae",
       main_species_group == "MOJARRA" ~ "Haemulidae",
       main_species_group == "ROBALO" ~ "Centropomidae",
       main_species_group == "SIERRA" ~ "Scombridae",
-      main_species_group == "GUACHINANGO" ~ "Lutjanidae",
+      # main_species_group == "" ~ "Lutjanidae",
       main_species_group == "JUREL" ~ "Carangidae",
       main_species_group == "PETO" ~ "Scombridae",
       main_species_group == "BESUGO" ~ "Sparidae",
@@ -94,9 +95,13 @@ prices <- landings %>%
   ) %>%
   drop_na(value) %>%
   drop_na(landed_weight) %>%
+  filter(value < 1e7) %>% 
+  group_by(year, family, group) %>% 
+  summarize(value = sum(value),
+            landed_weight = sum(landed_weight)) %>% 
+  ungroup() %>% 
   mutate(price = value / landed_weight) %>%
-  filter(price < 200) %>%
-  left_join(mex_cpi, by = c("year_cut" = "year")) %>%
+  left_join(mex_cpi, by = "year") %>%
   mutate(def_price = price * fact)
 
 # Calculate mean value
@@ -105,7 +110,8 @@ family_prices <- prices %>%
   summarize(
     mean_price = mean(def_price, na.rm = T),
     median_price = median(def_price, na.rm = T)
-  )
+  ) %>% 
+  ungroup()
 
 # EXPORT DATA ##################################################################
 write_csv(x = prices,

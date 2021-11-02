@@ -42,7 +42,8 @@ fish <-
     size = talla,
     abundance = abundancia
   ) %>%
-  filter(!str_detect(species, "Phoca|Zalophus")) %>%
+  filter(!str_detect(species, "Phoca|Zalophus"),
+         !community == "Isla Magdalena") %>%
   mutate(
     size = as.numeric(ifelse(size == "ND", NA_character_, size)),
     abundance = as.numeric(ifelse(abundance == "ND", 0, abundance)),
@@ -79,12 +80,45 @@ fish <-
       T ~ site
     )
   ) %>%
+  mutate(
+    community = case_when(
+      community == "Guaymas" ~ "Isla San Pedro Nolasco",
+      community == "Bahia de Kino" ~ "Isla San Pedro Mártir",
+      T ~ community
+    )
+  ) %>%
   filter(!species == "Nd") %>%
   mutate(genus = str_extract(species, "[:alpha:]+"),
          group = "Escama")
 
 
 # Invertebrate transects
+
+
+
+
+
+keep_inverts <-
+  c(
+    "Haliotis assimilis",
+    "Haliotis corrugata",
+    "Haliotis cracherodii",
+    "Haliotis fulgens",
+    "Haliotis kamtschatkana",
+    "Haliotis rufescens",
+    "Haliotis sorenseni",
+    "Holothuria impatiens",
+    "Isostichopus fuscus",
+    "Mesocentrotus franciscanus",
+    "Panulirus argus",
+    "Panulirus guttatus",
+    "Panulirus inflatus",
+    "Panulirus interruptus",
+    "Parastichopus parvimensis",
+    "Strongylocentrotus purpuratus"
+  )
+
+
 inverts <-
   read_delim(
     here(
@@ -113,6 +147,7 @@ inverts <-
     species = especie,
     abundance = abundancia
   ) %>%
+  filter(!community == "Isla Magdalena") %>%
   mutate(
     abundance = as.numeric(ifelse(abundance == "ND", 0, abundance)),
     species = str_remove_all(species, "\xa0"),
@@ -136,21 +171,38 @@ inverts <-
       T ~ site
     )
   ) %>%
-  filter(!species == "Nd") %>%
-  mutate(genus = str_extract(species, "[:alpha:]+"),
-         group = "Invertebrado")
+  mutate(
+    community = case_when(
+      community == "Guaymas" ~ "Isla San Pedro Nolasco",
+      community == "Bahia de Kino" ~ "Isla San Pedro Mártir",
+      T ~ community
+    )
+  ) %>%
+  mutate(
+    genus = str_extract(species, "[:alpha:]+"),
+    group = "Invertebrado",
+    family = case_when(
+      str_detect(species, "Haliotis") ~ "Haliotidae",
+      str_detect(species, "Panulirus") ~ "Palinuridae",
+      species %in% c("Isostichopus fuscus", "Holothuria impatiens") ~ "Holothuriidae",
+      T ~ species
+    )
+  ) %>% 
+  filter(!species == "Nd")
 
 
 
 # EXPORT DATA ##################################################################
 # Export clean fish transects
 write_csv(
-  x = fish,                                                                     # Object to export
+  x = fish,
+  # Object to export
   file = here("data", "processed_data", "clean_fish_transects.csv")             # Filename
 )
 
 # Export clean invertebrate transects
 write_csv(
-  x = inverts,                                                                  # Object to export
+  x = inverts,
+  # Object to export
   file = here("data", "processed_data", "clean_invertebrate_transects.csv")     # Filename
 )
