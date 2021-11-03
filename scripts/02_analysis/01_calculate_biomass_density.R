@@ -18,7 +18,7 @@ dens_weight_inverts <- read.csv(here("data", "raw_data", "invertebrate_weight_fa
   select(-source)
 
 biomass <- clean_fish %>% 
-  filter(year == 2019) %>% 
+  # filter(year == 2019) %>% 
   left_join(lw, by = "species") %>% 
   mutate(w = a * (size ^ b),
          biomass = abundance * w) %>% 
@@ -27,10 +27,10 @@ biomass <- clean_fish %>%
             biomass_kg_m2 = biomass_g_m2 / 1000,
             biomass_kg_hect = biomass_kg_m2 * 10000) %>% 
   ungroup() %>% 
-  select(-c(biomass_g_m2, biomass_kg_m2, year)) 
+  select(-c(biomass_g_m2, biomass_kg_m2)) 
 
 invert_dens <- clean_inverts %>% 
-  filter(year == 2019) %>% 
+  # filter(year == 2019) %>% 
   left_join(dens_weight_inverts, by = "family") %>% 
   mutate(biomass = abundance * w_fact) %>% 
   group_by(year, community, site, zone, transect, group, genus, family) %>% 
@@ -38,7 +38,7 @@ invert_dens <- clean_inverts %>%
             biomass_kg_m2 = biomass_g_m2 / 1000,
             biomass_kg_hect = biomass_kg_m2 * 10000) %>% 
   ungroup() %>% 
-  select(-c(biomass_g_m2, biomass_kg_m2, year, genus)) 
+  select(-c(biomass_g_m2, biomass_kg_m2, genus)) 
 
 
 write_csv(x = biomass,

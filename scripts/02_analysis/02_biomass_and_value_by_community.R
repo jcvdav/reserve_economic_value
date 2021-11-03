@@ -7,20 +7,22 @@
 ######################################################
 
 library(here)
+library(ggrepel)
+library(ggridges)
 library(tidyverse)
 
 fish_biomass <-
   read_csv(here("data", "processed_data", "fish_biomass_by_species.csv"))
+
 invert_biomass <-
-  read_csv(here(
-    "data",
-    "processed_data",
-    "invertebrate_biomass_by_species.csv"
-  ))
+  read_csv(here( "data", "processed_data", "invertebrate_biomass_by_species.csv"))
+
 family <-
   read_csv(file = here("data", "processed_data", "family_names.csv"))
+
 prices <-
   read_csv(file = here("data", "processed_data", "family_prices.csv"))
+
 costs <-
   read.csv(here("data", "raw_data", "reserve_cost_per_hectare.csv")) %>%
   mutate(cost_mxp_ha = cost_usd_ha * 19.2472) %>%
@@ -42,13 +44,13 @@ biomass_value <- rbind(fish_biomass_value, invert_biomass_value)
 
 biomass_by_transect <- biomass_value %>%
   drop_na(mean_price) %>%
-  group_by(community, site, zone, group, transect) %>%
+  group_by(year, community, site, zone, group, transect) %>%
   summarize(
     biomass_kg_hect = sum(biomass_kg_hect, na.rm = T),
     value_mxp_hect = sum(value_mxp_hect, na.rm = T) / 1000)
 
 biomass_by_community <- biomass_by_transect %>% 
-  group_by(community, zone, group) %>%
+  group_by(year, community, zone, group) %>%
   summarize(
     biomass_kg_hect_sd = sd(biomass_kg_hect, na.rm = T),
     biomass_kg_hect = mean(biomass_kg_hect, na.rm = T),
@@ -60,12 +62,32 @@ biomass_by_community <- biomass_by_transect %>%
   mutate(community = fct_reorder(community, value_mxp_hect, sum))
 
 
+# Valore de uso extractivo total
 tot_val_data <- biomass_by_community %>%
-  filter(zone == "Reserva")
+  filter(zone == "Reserva",
+         year == 2019)
+
+# Valor inicial
+tot_val_init <- biomass_by_community %>% 
+  filter(zone == "Reserva") %>% 
+  group_by(community) %>% 
+  mutate(year_min = min(year)) %>% 
+  ungroup() %>% 
+  filter(year == year_min) %>% 
+  select(community, group, Reserva_inicial = value_mxp_hect)
+
+# Valor de uso sostenible
+sust_val_data <- biomass_by_community %>%
+  filter(year == 2019) %>% 
+  select(-year) %>% 
+  select(community, group, zone, value_mxp_hect) %>%
+  pivot_wider(names_from = zone, values_from = value_mxp_hect) %>%
+  left_join(tot_val_init, by = c("group", "community")) %>% 
+  mutate(esc = pmin(Control, Reserva_inicial, na.rm = T),
+         dif = pmax(0, Reserva - esc)) 
 
 
-
-# FIGURES
+# FIGURES and TABLES ########################################################################################
 
 # Total value
 
@@ -101,7 +123,7 @@ tot_val_data %>%
 
 
 tot_val_dist <- biomass_by_transect %>%
-  filter(zone == "Reserva") %>% 
+  filter(zone == "Reserva", year == 2019) %>% 
   ggplot(aes(y = community, x = value_mxp_hect, fill = group)) +
   geom_density_ridges(bandwidth = 10, alpha = 0.75) +
   theme_bw() +
@@ -115,12 +137,9 @@ tot_val_dist <- biomass_by_transect %>%
 
 # Sustainable value
 
-sust_val <- biomass_by_community %>%
-  select(community, group, zone, value_mxp_hect) %>%
-  pivot_wider(names_from = zone, values_from = value_mxp_hect) %>%
-  mutate(res = pmin(Control, 0.5 * Reserva),
-         dif = Reserva - res) %>%
-  ggplot(aes(x = community, y = dif, fill = group)) +
+
+sust_val <- ggplot(data = sust_val_data, 
+                   aes(x = community, y = dif, fill = group)) +
   geom_col(color = "black", position = "dodge") +
   scale_fill_brewer(palette = "Set1", direction = -1) +
   theme_bw() +
@@ -134,10 +153,46 @@ sust_val <- biomass_by_community %>%
   )
 
 
+sust_val_data %>% 
+  mutate_if(is.numeric, round, 2) %>% 
+  select(community, group, Reserva, Control, Reserva_inicial, dif) %>% 
+  replace_na(replace = list(Reserva_inicial = 0)) %>% 
+  group_by(community) %>% 
+  mutate(a = sum(dif)) %>% 
+  ungroup() %>% 
+  arrange(desc(a)) %>% 
+  select(-a) %>% 
+  mutate(pct = paste0(round((dif / Reserva) * 100), "%")) %>% 
+  knitr::kable(col.names = c("Comunidad", "Grupo", "Reserva", "Control", "Reserva (inicial)", "Valor", "%"),
+               booktabs = TRUE,
+               caption = "Valor de aprovechamiento sustentable (miles de pesos / ha) de las reservas marinas en cada comunidad. Las columnas de Reserva y Control muestran los valores para 2019. La columna de Reserva inicial muestra el valor de la reserva cuando fue implementada. La columna de Valor contiene la diferrencia entre el valor de la reserva hoy y el valor del control hoy o la reserva en su implementación, cualquiera sea el menor. La última columna muestra el porcentaje del valor que puede ser aprovechado sustentablemente, en relación a la extracción total. Las comunidades están ordenadas en orden descendiente según el valor sostenible total.",
+               label = "sust_val",
+               format = "latex") %>% 
+  kableExtra::collapse_rows(columns = 1) %>% 
+  cat(file = here("results", "tab", "sust_value.tex"))
+
+tot_sust_rel <- sust_val_data %>% 
+  mutate_if(is.numeric, round, 2) %>% 
+  select(community, group, Reserva, Control, Reserva_inicial, dif) %>% 
+  replace_na(replace = list(Reserva_inicial = 0)) %>% 
+  group_by(community) %>% 
+  mutate(a = sum(dif)) %>% 
+  ungroup() %>% 
+  arrange(desc(a)) %>% 
+  select(-a) %>% 
+  mutate(pct = dif / Reserva) %>% 
+  ggplot(aes(x = Reserva, y = dif, size = pct)) +
+  geom_point(shape = 21, aes(fill = group)) +
+  theme_bw() +
+  geom_label_repel(aes(label = community), size = 2) +
+  labs(x = "Valor extractivo total (1,000 MXP / ha)", y = "Valor extractivo sustentable (1,000 MXP / ha)")
+  
+
 
 # Compared to cost
 # 
 biomass_by_community %>%
+  filter(year == 2019) %>% 
   select(community, group, zone, value_mxp_hect) %>%
   pivot_wider(names_from = zone, values_from = value_mxp_hect) %>%
   mutate(Res50 = 0.5 * Reserva,
