@@ -1,6 +1,6 @@
 ﻿family,w_fact,source
-Holothuriidae,280,chavez_2011
-Strongylocentrotus purpuratus,36,smith_2012
-Mesocentrotus franciscanus,179,leus_2014
-Haliotidae,330,rosetto_2013
-Palinuridae,463,nielson_2011
+Holothuroidea,280,\cite{chavez2011stock}
+Strongylocentrotus purpuratus,36,"\cite{smith2021variation,dof_erizo}"
+Mesocentrotus franciscanus,179,"\cite{leus2014framework,dof_erizo}"
+Haliotidae,330,"\cite{rossetto2013reproductive,dof_abulon}"
+Palinuridae,463,"\cite{neilson2011assessment,dof_langosta}"

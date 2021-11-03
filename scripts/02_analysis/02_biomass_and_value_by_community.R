@@ -29,14 +29,12 @@ costs <-
   select(community, cost_mxp_ha)
 
 fish_biomass_value <- fish_biomass %>%
-  # filter(biomass_kg_hect > 0) %>%
   left_join(family, by = c("species", "genus")) %>%
   left_join(prices, by = c("family", "group")) %>%
   mutate(value_mxp_hect = mean_price * biomass_kg_hect) %>%
   select(-c(genus, species))
 
 invert_biomass_value <- invert_biomass %>%
-  # filter(biomass_kg_hect > 0) %>%
   left_join(prices, by = c("family", "group")) %>%
   mutate(value_mxp_hect = mean_price * biomass_kg_hect)
 
@@ -114,11 +112,13 @@ tot_val_data %>%
   mutate(value = paste0(value_mxp_hect, " (", value_mxp_hect_ci25, " - ", value_mxp_hect_ci75, ")")) %>% 
   select(community, group, value) %>% 
   pivot_wider(names_from = group, values_from = value) %>% 
+  arrange(desc(community)) %>% 
   knitr::kable(col.names = c("Comunindad", "Escama", "Invertebrados"),
                format = "latex",
                booktabs = T,
                caption = "Valor de las reservas por comunidad y grupo. Los valores presentan el promedio en miles de pesos del 2019 por hectárea. Los datos entre paréntesis idncian los intervalos de confianza al 25\\% y 75\\%.",
                label = "tot_val") %>%
+  kableExtra::kable_styling(latex_options = "hold_position") %>% 
   cat(file = here("results", "tab", "total_value.tex"))
 
 
@@ -168,6 +168,7 @@ sust_val_data %>%
                caption = "Valor de aprovechamiento sustentable (miles de pesos / ha) de las reservas marinas en cada comunidad. Las columnas de Reserva y Control muestran los valores para 2019. La columna de Reserva inicial muestra el valor de la reserva cuando fue implementada. La columna de Valor contiene la diferrencia entre el valor de la reserva hoy y el valor del control hoy o la reserva en su implementación, cualquiera sea el menor. La última columna muestra el porcentaje del valor que puede ser aprovechado sustentablemente, en relación a la extracción total. Las comunidades están ordenadas en orden descendiente según el valor sostenible total.",
                label = "sust_val",
                format = "latex") %>% 
+  kableExtra::kable_styling(latex_options = "hold_position") %>% 
   kableExtra::collapse_rows(columns = 1) %>% 
   cat(file = here("results", "tab", "sust_value.tex"))
 
@@ -180,33 +181,45 @@ tot_sust_rel <- sust_val_data %>%
   ungroup() %>% 
   arrange(desc(a)) %>% 
   select(-a) %>% 
-  mutate(pct = dif / Reserva) %>% 
+  mutate(pct = dif / Reserva * 100) %>% 
   ggplot(aes(x = Reserva, y = dif, size = pct)) +
   geom_point(shape = 21, aes(fill = group)) +
   theme_bw() +
   geom_label_repel(aes(label = community), size = 2) +
-  labs(x = "Valor extractivo total (1,000 MXP / ha)", y = "Valor extractivo sustentable (1,000 MXP / ha)")
-  
+  labs(x = "Valor extractivo total (1,000 MXP / ha)", y = "Valor extractivo sustentable (1,000 MXP / ha)") +
+  coord_equal() +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed") +
+  scale_fill_brewer(palette = "Set1", direction = -1) +
+  lims(x = c(0, 125), y = c(0, 125)) +
+  theme(legend.justification = c(0, 1),
+        legend.position = c(0, 1),
+        legend.background = element_blank()) +
+  guides(fill = guide_legend("Grupo"),
+         size = guide_legend("% extraible\nsustentablemente"))
+
 
 
 # Compared to cost
 # 
-biomass_by_community %>%
-  filter(year == 2019) %>% 
-  select(community, group, zone, value_mxp_hect) %>%
-  pivot_wider(names_from = zone, values_from = value_mxp_hect) %>%
-  mutate(Res50 = 0.5 * Reserva,
-         diff = (Reserva - min(Control, Res50)) * 1000) %>%
-  group_by(community) %>%
-  summarize(value = sum(diff)) %>%
+sust_val_data %>% 
+  group_by(community) %>% 
+  summarize(value = sum(dif, na.rm = T) * 1000) %>% 
   left_join(costs, by = "community") %>%
+  mutate(pct = (cost_mxp_ha / value) * 100) %>% 
+  mutate_if(is.numeric, round, 2) %>% 
+  replace_na(list(cost_mxp_ha = 0, pct = 0)) %>%
+  mutate(community = fct_reorder(community, pct),
+         community = fct_relevel(community, "Isla San Pedro Mártir", after = Inf)) %>% 
+  arrange(community) %>% 
+  mutate(pct = ifelse(pct %in% c(0, Inf), "-", paste0(pct, "%"))) %>% 
   knitr::kable(
-    col.names = c("Comunidad", "Valor (MXP / hac)", "Costo (MXP / ha)"),
+    col.names = c("Comunidad", "Valor (MXP / ha)", "Costo (MXP / ha)", "%"),
     booktabs = TRUE,
     format = "latex",
     caption = "Relación de valor de uso sustentable de las reservas y costos de operación.",
     label = "sust_val_cost"
   ) %>%
+  kableExtra::kable_styling(latex_options = "hold_position") %>% 
   cat(file = here("results", "tab", "valor_y_costo.tex"))
 
 
@@ -230,5 +243,12 @@ ggsave(
   sust_val,
   filename = here("results", "img", "sustainable_value_per_hectare.pdf"),
   width = 8,
+  height = 4
+)
+
+ggsave(
+  tot_sust_rel,
+  filename = here("results", "img", "sustainable_vs_total.pdf"),
+  width = 4,
   height = 4
 )

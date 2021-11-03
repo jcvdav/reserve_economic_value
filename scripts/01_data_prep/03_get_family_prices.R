@@ -51,7 +51,7 @@ drop_spp <-
     "GUACHINANGO"
   )
 
-inverts <- c("Haliotidae", "Strongylocentrotidae", "Palinuridae", "Holothuriidae")
+inverts <- c("Haliotidae", "Strongylocentrotidae", "Palinuridae", "Holothuroidea")
 
 # PROCESS ######################################################################
 
@@ -66,7 +66,6 @@ prices <- landings %>%
       main_species_group == "MOJARRA" ~ "Haemulidae",
       main_species_group == "ROBALO" ~ "Centropomidae",
       main_species_group == "SIERRA" ~ "Scombridae",
-      # main_species_group == "" ~ "Lutjanidae",
       main_species_group == "JUREL" ~ "Carangidae",
       main_species_group == "PETO" ~ "Scombridae",
       main_species_group == "BESUGO" ~ "Sparidae",
@@ -89,7 +88,7 @@ prices <- landings %>%
       main_species_group == "ABULON" ~ "Haliotidae",
       main_species_group == "ERIZO" ~ "Strongylocentrotidae",
       main_species_group == "LANGOSTA" ~ "Palinuridae",
-      main_species_group == "PEPINO DE MAR" ~ "Holothuriidae"
+      main_species_group == "PEPINO DE MAR" ~ "Holothuroidea"
     ),
     group = ifelse(family %in% inverts, "Invertebrado", "Escama")
   ) %>%

@@ -184,7 +184,7 @@ inverts <-
     family = case_when(
       str_detect(species, "Haliotis") ~ "Haliotidae",
       str_detect(species, "Panulirus") ~ "Palinuridae",
-      species %in% c("Isostichopus fuscus", "Holothuria impatiens") ~ "Holothuriidae",
+      species %in% c("Isostichopus fuscus", "Holothuria impatiens", "Parastichopus parvimensis") ~ "Holothuroidea",
       T ~ species
     )
   ) %>% 
