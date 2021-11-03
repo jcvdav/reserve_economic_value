@@ -87,6 +87,18 @@ tot_val <-
     legend.background = element_blank()
   )
 
+tot_val_data %>% 
+  mutate_if(is.numeric, round, 2) %>% 
+  mutate(value = paste0(value_mxp_hect, " (", value_mxp_hect_ci25, " - ", value_mxp_hect_ci75, ")")) %>% 
+  select(community, group, value) %>% 
+  pivot_wider(names_from = group, values_from = value) %>% 
+  knitr::kable(col.names = c("Comunindad", "Escama", "Invertebrados"),
+               format = "latex",
+               booktabs = T,
+               caption = "Valor de las reservas por comunidad y grupo. Los valores presentan el promedio en miles de pesos del 2019 por hectárea. Los datos entre paréntesis idncian los intervalos de confianza al 25\\% y 75\\%.",
+               label = "tot_val") %>%
+  cat(file = here("results", "tab", "total_value.tex"))
+
 
 tot_val_dist <- biomass_by_transect %>%
   filter(zone == "Reserva") %>% 
@@ -129,13 +141,16 @@ biomass_by_community %>%
   select(community, group, zone, value_mxp_hect) %>%
   pivot_wider(names_from = zone, values_from = value_mxp_hect) %>%
   mutate(Res50 = 0.5 * Reserva,
-         diff = Reserva - min(Control, Res50)) %>%
+         diff = (Reserva - min(Control, Res50)) * 1000) %>%
   group_by(community) %>%
   summarize(value = sum(diff)) %>%
   left_join(costs, by = "community") %>%
   knitr::kable(
     col.names = c("Comunidad", "Valor (MXP / hac)", "Costo (MXP / ha)"),
-    format = "latex"
+    booktabs = TRUE,
+    format = "latex",
+    caption = "Relación de valor de uso sustentable de las reservas y costos de operación.",
+    label = "sust_val_cost"
   ) %>%
   cat(file = here("results", "tab", "valor_y_costo.tex"))
 
