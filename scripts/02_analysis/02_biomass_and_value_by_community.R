@@ -165,7 +165,7 @@ sust_val_data %>%
   mutate(pct = paste0(round((dif / Reserva) * 100), "%")) %>% 
   knitr::kable(col.names = c("Comunidad", "Grupo", "Reserva", "Control", "Reserva (inicial)", "Valor", "%"),
                booktabs = TRUE,
-               caption = "Valor de aprovechamiento sustentable (miles de pesos / ha) de las reservas marinas en cada comunidad. Las columnas de Reserva y Control muestran los valores para 2019. La columna de Reserva inicial muestra el valor de la reserva cuando fue implementada. La columna de Valor contiene la diferrencia entre el valor de la reserva hoy y el valor del control hoy o la reserva en su implementación, cualquiera sea el menor. La última columna muestra el porcentaje del valor que puede ser aprovechado sustentablemente, en relación a la extracción total. Las comunidades están ordenadas en orden descendiente según el valor sostenible total.",
+               caption = "Valor de aprovechamiento sostenible (miles de pesos / ha) de las reservas marinas en cada comunidad. Las columnas de Reserva y Control muestran los valores para 2019. La columna de Reserva inicial muestra el valor de la reserva cuando fue implementada. La columna de Valor contiene la diferrencia entre el valor de la reserva hoy y el valor del control hoy o la reserva en su implementación, cualquiera sea el menor. La última columna muestra el porcentaje del valor que puede ser aprovechado sosteniblemente, en relación a la extracción total. Las comunidades están ordenadas en orden descendiente según el valor sostenible total.",
                label = "sust_val",
                format = "latex") %>% 
   kableExtra::kable_styling(latex_options = "hold_position") %>% 
@@ -186,7 +186,7 @@ tot_sust_rel <- sust_val_data %>%
   geom_point(shape = 21, aes(fill = group)) +
   theme_bw() +
   geom_label_repel(aes(label = community), size = 2) +
-  labs(x = "Valor extractivo total (1,000 MXP / ha)", y = "Valor extractivo sustentable (1,000 MXP / ha)") +
+  labs(x = "Valor extractivo total (1,000 MXP / ha)", y = "Valor extractivo sostenible (1,000 MXP / ha)") +
   coord_equal() +
   geom_abline(intercept = 0, slope = 1, linetype = "dashed") +
   scale_fill_brewer(palette = "Set1", direction = -1) +
@@ -195,7 +195,7 @@ tot_sust_rel <- sust_val_data %>%
         legend.position = c(0, 1),
         legend.background = element_blank()) +
   guides(fill = guide_legend("Grupo"),
-         size = guide_legend("% extraible\nsustentablemente"))
+         size = guide_legend("% extraible\nsosteniblemente"))
 
 
 
@@ -216,7 +216,7 @@ sust_val_data %>%
     col.names = c("Comunidad", "Valor (MXP / ha)", "Costo (MXP / ha)", "%"),
     booktabs = TRUE,
     format = "latex",
-    caption = "Relación de valor de uso sustentable de las reservas y costos de operación.",
+    caption = "Relación de valor de uso sostenible de las reservas y costos de operación.",
     label = "sust_val_cost"
   ) %>%
   kableExtra::kable_styling(latex_options = "hold_position") %>% 
@@ -249,6 +249,6 @@ ggsave(
 ggsave(
   tot_sust_rel,
   filename = here("results", "img", "sustainable_vs_total.pdf"),
-  width = 4,
-  height = 4
+  width = 5,
+  height = 5
 )
