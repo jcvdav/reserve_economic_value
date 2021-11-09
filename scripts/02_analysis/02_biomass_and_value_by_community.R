@@ -116,7 +116,7 @@ tot_val_data %>%
   knitr::kable(col.names = c("Comunindad", "Escama", "Invertebrados"),
                format = "latex",
                booktabs = T,
-               caption = "Valor de las reservas por comunidad y grupo. Los valores presentan el promedio en miles de pesos del 2019 por hectárea. Los datos entre paréntesis idncian los intervalos de confianza al 25\\% y 75\\%.",
+               caption = "Valor de las reservas por comunidad y grupo. Los valores presentan el promedio en miles de pesos del 2019 por hectárea. Los datos entre paréntesis indican los intervalos de confianza al 25\\% y 75\\%.",
                label = "tot_val") %>%
   kableExtra::kable_styling(latex_options = "hold_position") %>% 
   cat(file = here("results", "tab", "total_value.tex"))
@@ -165,7 +165,7 @@ sust_val_data %>%
   mutate(pct = paste0(round((dif / Reserva) * 100), "%")) %>% 
   knitr::kable(col.names = c("Comunidad", "Grupo", "Reserva", "Control", "Reserva (inicial)", "Valor", "%"),
                booktabs = TRUE,
-               caption = "Valor de aprovechamiento sostenible (miles de pesos / ha) de las reservas marinas en cada comunidad. Las columnas de Reserva y Control muestran los valores para 2019. La columna de Reserva inicial muestra el valor de la reserva cuando fue implementada. La columna de Valor contiene la diferrencia entre el valor de la reserva hoy y el valor del control hoy o la reserva en su implementación, cualquiera sea el menor. La última columna muestra el porcentaje del valor que puede ser aprovechado sosteniblemente, en relación a la extracción total. Las comunidades están ordenadas en orden descendiente según el valor sostenible total.",
+               caption = "Valor de aprovechamiento sostenible (miles de pesos / ha) de las reservas marinas en cada comunidad. Las columnas de Reserva y Control muestran los valores para 2019. La columna de Reserva inicial muestra el valor de la reserva cuando fue implementada. La columna de Valor contiene la diferencia entre el valor de la reserva hoy y el valor del control hoy o la reserva en su implementación, cualquiera sea el menor. La última columna muestra el porcentaje del valor que puede ser aprovechado sosteniblemente, en relación a la extracción total. Las comunidades están ordenadas en orden descendiente según el valor sostenible total.",
                label = "sust_val",
                format = "latex") %>% 
   kableExtra::kable_styling(latex_options = "hold_position") %>% 
