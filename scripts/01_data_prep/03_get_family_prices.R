@@ -72,7 +72,7 @@ prices <- landings %>%
       main_species_group == "CORVINA" ~ "Scianidae",
       main_species_group == "PARGO" ~ "Lutjanidae",
       main_species_group == "LEBRANCHA" ~ "Mugilidae",
-      main_species_group == "PIERNA" ~ "Malacanthidae",
+      main_species_group == "PIERNA" ~ "Latilidae",
       main_species_group == "CABRILLA" ~ "Serranidae",
       main_species_group == "MERO" ~ "Serranidae",
       main_species_group == "RUBIA Y VILLAJAIBA" ~ "Lutjanidae",
@@ -108,9 +108,11 @@ family_prices <- prices %>%
   group_by(family, group) %>%
   summarize(
     mean_price = mean(def_price, na.rm = T),
-    median_price = median(def_price, na.rm = T)
+    median_price = median(def_price, na.rm = T),
+    sd_price = sd(def_price, na.rm = T)
   ) %>% 
   ungroup()
+
 
 # EXPORT DATA ##################################################################
 write_csv(x = prices,

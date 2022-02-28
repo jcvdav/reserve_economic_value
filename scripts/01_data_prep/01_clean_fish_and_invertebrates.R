@@ -71,14 +71,17 @@ fish <-
     site = stringi::stri_enc_toutf8(site),
     site = str_to_sentence(site),
     site = str_remove_all(site, "Zrp"),
-    site = str_remove_all(site, "norte|sur|\\(control\\)"),
+    site = str_remove_all(site, "\\(control\\)"),
     site = str_trim(site),
     site = case_when(
       site == "40canones2" ~ "40 canones",
       site == "40canones2control" ~ "40 canones",
       site == "40 canones control" ~ "40 canones",
       T ~ site
-    )
+    ),
+    zone = case_when(zone == "Pesca Parcial" ~ "Control",
+                     zone == "Pesca parcial langosta" ~ "Reserva",
+                     T ~ zone)
   ) %>%
   mutate(
     community = case_when(
@@ -87,37 +90,41 @@ fish <-
       T ~ community
     )
   ) %>%
-  filter(!species == "Nd") %>%
+  filter(!species == "Nd")
+
+
+# Find all combinations of species occurring in each community to add zeroes
+# Dictyionary of transects performed
+fish_transect_by_com_year <- fish %>% 
+  select(year, community, site, zone, transect, id) %>% 
+  distinct()
+
+# Dictionary of species and families ever recorded by community
+fish_spp_by_com <- fish %>%
+  filter(abundance > 0) %>% 
+  select(community, species) %>%
+  distinct()
+
+# Observed abundances
+fish_abundances <- fish %>% 
+  filter(abundance > 0,
+         !is.na(abundance)) %>%
+  group_by(year, community, site, zone, transect, species, size) %>% 
+  summarize(abundance = sum(abundance))
+
+fish_completed <- fish_transect_by_com_year %>% 
+  left_join(fish_spp_by_com, by = "community") %>% 
+  left_join(fish_abundances, by = c("year", "community", "site", "zone", "transect", "species")) %>% 
+  replace_na(replace = list(abundance = 0)) %>%
   mutate(genus = str_extract(species, "[:alpha:]+"),
          group = "Escama")
 
 
+
+################################################################################
+
+
 # Invertebrate transects
-
-
-
-
-
-keep_inverts <-
-  c(
-    "Haliotis assimilis",
-    "Haliotis corrugata",
-    "Haliotis cracherodii",
-    "Haliotis fulgens",
-    "Haliotis kamtschatkana",
-    "Haliotis rufescens",
-    "Haliotis sorenseni",
-    "Holothuria impatiens",
-    "Isostichopus fuscus",
-    "Mesocentrotus franciscanus",
-    "Panulirus argus",
-    "Panulirus guttatus",
-    "Panulirus inflatus",
-    "Panulirus interruptus",
-    "Parastichopus parvimensis",
-    "Strongylocentrotus purpuratus"
-  )
-
 
 inverts <-
   read_delim(
@@ -161,7 +168,7 @@ inverts <-
     site = stringi::stri_enc_toutf8(site),
     site = str_to_sentence(site),
     site = str_remove_all(site, "Zrp"),
-    site = str_remove_all(site, "norte|sur|\\(control\\)"),
+    site = str_remove_all(site, "\\(control\\)"),
     site = str_trim(site),
     site = str_squish(site),
     site = case_when(
@@ -176,33 +183,66 @@ inverts <-
       community == "Guaymas" ~ "Isla San Pedro Nolasco",
       community == "Bahia de Kino" ~ "Isla San Pedro Mártir",
       T ~ community
-    )
+    ),
+    zone = case_when(zone == "Pesca Parcial" ~ "Reserva",
+                     zone == "Pesca parcial langosta" ~ "Control",
+                     T ~ zone)
   ) %>%
   mutate(
-    genus = str_extract(species, "[:alpha:]+"),
-    group = "Invertebrado",
     family = case_when(
       str_detect(species, "Haliotis") ~ "Haliotidae",
       str_detect(species, "Panulirus") ~ "Palinuridae",
-      species %in% c("Isostichopus fuscus", "Holothuria impatiens", "Parastichopus parvimensis") ~ "Holothuroidea",
-      T ~ species
+      species %in% c("Isostichopus fuscus", "Holothuria impatiens", "Parastichopus parvimensis", "Pepino spp", "Holothuroidea spp") ~ "Holothuroidea",
+      species %in% c("Strongylocentrotus purpuratus", "Mesocentrotus franciscanus") ~ "Strongylocentrotidae",
+      T ~ NA_character_
     )
   ) %>% 
-  filter(!species == "Nd")
+  filter(!species %in% c("Nd", "Pterois volitans"))
+
+# Find all combinations of species occurring in each community to add zeroes
+# Dictyionary of transects performed
+invert_transect_by_com_year <- inverts %>% 
+  select(year, community, site, zone, transect, id) %>% 
+  distinct()
+
+# Dictionary of species and families ever recorded by community
+invert_spp_by_com <- inverts %>%
+  filter(abundance > 0) %>% 
+  select(community, species, family) %>%
+  distinct()
+
+# Observed abundances
+invert_abundances <- inverts %>% 
+  filter(abundance > 0,
+         !is.na(abundance)) %>%
+  group_by(year, community, site, zone, transect, species) %>% 
+  summarize(abundance = sum(abundance))
+
+invert_completed <- invert_transect_by_com_year %>% 
+  left_join(invert_spp_by_com, by = "community") %>% 
+  left_join(invert_abundances, by = c("year", "community", "site", "zone", "transect", "species")) %>% 
+  replace_na(replace = list(abundance = 0)) %>%
+  mutate(genus = str_extract(species, "[:alpha:]+"),
+         group = "Invertebrado")
 
 
 
 # EXPORT DATA ##################################################################
 # Export clean fish transects
 write_csv(
-  x = fish,
+  x = fish_completed,
   # Object to export
   file = here("data", "processed_data", "clean_fish_transects.csv")             # Filename
 )
 
 # Export clean invertebrate transects
 write_csv(
-  x = inverts,
+  x = invert_completed,
   # Object to export
   file = here("data", "processed_data", "clean_invertebrate_transects.csv")     # Filename
 )
+
+
+
+
+

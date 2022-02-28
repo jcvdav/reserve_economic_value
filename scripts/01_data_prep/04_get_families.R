@@ -34,7 +34,9 @@ spp_tbl <- spp_list %>%
   left_join(taxa_genus, by = "genus") %>% 
   mutate(family = coalesce(family.x, family.y)) %>% 
   select(family, genus, species) %>% 
-  distinct()
+  distinct() %>% 
+  mutate(family = ifelse(family == "Polyprionidae", "Serranidae", family))
+
 
 write_csv(x = spp_tbl,
           file = here("data", "processed_data", "family_names.csv"))
