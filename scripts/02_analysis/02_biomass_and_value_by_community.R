@@ -167,7 +167,7 @@ value_ts <- ggplot(data = biomass_by_community,
   theme(strip.background = element_blank(),
         legend.position = "bottom") +
   labs(x = "Year",
-       y = "Value (MXP / ha)",
+       y = "Value (Thousand MXP / ha)",
        linetype = "Zone",
        fill = "Group",
        color = "Group")
@@ -175,7 +175,7 @@ value_ts <- ggplot(data = biomass_by_community,
 ggsave(plot = value_ts,
        filename = here("results", "img", "value_timeseries.png"),
        width = 6.5,
-       height = 4)
+       height = 5)
 
 # Total value
 tot_val <-
@@ -190,7 +190,7 @@ tot_val <-
   theme_bw() +
   coord_flip() +
   labs(x = "Comunity",
-       y = "Value (Thousands MXP / ha)",
+       y = "Value of biomass\n(Thousands Thousand MXP / ha)",
        fill = "Group") +
   theme(
     legend.justification = c(1, 0),
@@ -216,20 +216,8 @@ sust_val <- models %>%
   scale_fill_brewer(palette = "Set1") +
   theme_bw() +
   coord_flip() +
-  labs(x = "", y = "Value (Thousands MXP / ha)") +
+  labs(x = "", y = "Extractive value of biomass\n(Thousands Thousand MXP / ha)") +
   theme(legend.position = "None")
-
-# sust_val <- ggplot(data = sust_val_data, 
-#                    aes(x = community, y = dif, fill = group)) +
-#   geom_col(color = "black", position = "dodge") +
-#   scale_fill_brewer(palette = "Set1") +
-#   theme_bw() +
-#   coord_flip() +
-#   scale_x_discrete(labels = NULL) +
-#   labs(x = "", y = "Value (Thousands MXP / ha)") +
-#   guides(fill = guide_legend("Grupo")) +
-  
-
 
 p <- plot_grid(tot_val, sust_val,
                ncol = 2,
@@ -239,6 +227,40 @@ p <- plot_grid(tot_val, sust_val,
 ggsave(plot = p,
        filename = here("results", "img", "economic_values.png"),
        width = 7, height = 6)
+
+# Invert vs Finfish
+fish_inv <- models %>% 
+  select(community, group, mod2) %>% 
+  mutate(mod1 = map(mod2, broom::tidy)) %>% 
+  unnest(mod1) %>% 
+  filter(term == "treatmentTRUE") %>% 
+  mutate(estimate = pmax(estimate, 0),
+         std.error = (estimate > 0) * std.error) %>% select(community, group, estimate, std.error) %>% 
+  pivot_wider(names_from = group, values_from = c(estimate, std.error)) %>%
+  ggplot(aes(x = estimate_Finfish,
+             y = estimate_Invertebrate,
+             fill = community)) +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "red") +
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  geom_errorbar(aes(ymin = estimate_Invertebrate - std.error_Invertebrate,
+                    ymax = estimate_Invertebrate + std.error_Invertebrate),
+                width = 0.5) +
+  geom_errorbarh(aes(xmin = estimate_Finfish - std.error_Finfish,
+                     xmax = estimate_Finfish + std.error_Finfish),
+                 height = 0.5) +
+  geom_point(shape = 21, size = 3) +
+  scale_fill_brewer(palette = "Set1") +
+  coord_equal() +
+  labs(x = "Extractive value of finfish biomass\n(Thousand MXP / ha)",
+       y = "Extractive value of invertebrate biomass\n(Thousand MXP / ha)",
+       fill = "Community") +
+  theme_bw()
+
+ggsave(plot = fish_inv,
+       file = here("results", "img", "fish_vs_invert.png"),
+       width = 5,
+       height = 4)
 
 # Table
 
@@ -280,13 +302,13 @@ write_csv(x = sust_val_data_tab,
 # 
 cost_vs_ben <- sust_val_data %>% 
   group_by(community) %>% 
-  summarize(value = sum(dif, na.rm = T) * 1000) %>% 
+  summarize(value = sum(dif, na.rm = T)) %>% 
   left_join(costs, by = "community") %>%
-  mutate(pct = (cost_mxp_ha / value) * 100) %>% 
+  mutate(pct = ((cost_mxp_ha / 1e3) / value) * 100) %>% 
   mutate_if(is.numeric, round, 2) %>% 
   replace_na(list(cost_mxp_ha = 0, pct = 0)) %>%
-  mutate(community = fct_reorder(community, pct),
-         community = fct_relevel(community, "Isla San Pedro Mártir", after = Inf)) %>% 
+  # mutate(community = fct_reorder(community, pct),
+  #        community = fct_relevel(community, "Isla San Pedro Mártir", after = Inf)) %>% 
   arrange(community) %>% 
   mutate(pct = ifelse(pct %in% c(0, Inf), "-", paste0(pct, "%")))
 
@@ -337,7 +359,7 @@ biomass_value %>%
   coord_flip() +
   scale_fill_brewer(palette = "Set1") +
   labs(x = "Taxonomic family",
-       y = "Value of biomass (MXP / ha)",
+       y = "Value of biomass (Thousand MXP / ha)",
        fill = "Group") +
   theme_bw()
 
