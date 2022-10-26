@@ -29,7 +29,6 @@ prices <-
 
 costs <-
   read.csv(here("data", "raw_data", "reserve_cost_per_hectare.csv")) %>%
-  mutate(cost_mxp_ha = cost_usd_ha * 19) %>%
   select(community, cost_mxp_ha)
 
 ## PROCESSING ##################################################################
@@ -160,8 +159,8 @@ value_ts <- ggplot(data = biomass_by_community,
   geom_point() +
   geom_point(data = tot_val_ref, pch = 21, fill = "transparent", size = 4) +
   facet_wrap( ~ community, scales = "free") +
-  scale_color_brewer(palette = "Set1") +
-  scale_fill_brewer(palette = "Set1") +
+  scale_color_brewer(palette = "Set2") +
+  scale_fill_brewer(palette = "Set2") +
   scale_linetype_manual(values = c("dashed", "solid")) +
   theme_bw() +
   theme(strip.background = element_blank(),
@@ -186,7 +185,7 @@ tot_val <-
                     ymax = value_mxp_hect + std.error),
                 position = "dodge") +
   scale_y_continuous(limits = c(NA, 80)) +
-  scale_fill_brewer(palette = "Set1") +
+  scale_fill_brewer(palette = "Set2") +
   theme_bw() +
   coord_flip() +
   labs(x = "Comunity",
@@ -213,7 +212,7 @@ sust_val <- models %>%
                 position = "dodge") +
   scale_x_discrete(labels = NULL) +
   scale_y_continuous(limits = c(NA, 80)) +
-  scale_fill_brewer(palette = "Set1") +
+  scale_fill_brewer(palette = "Set2") +
   theme_bw() +
   coord_flip() +
   labs(x = "", y = "Extractive value of biomass\n(Thousands Thousand MXP / ha)") +
@@ -251,7 +250,6 @@ fish_inv <- models %>%
                  height = 0.5) +
   geom_point(shape = 21, size = 3) +
   scale_fill_brewer(palette = "Set1") +
-  coord_equal() +
   labs(x = "Extractive value of finfish biomass\n(Thousand MXP / ha)",
        y = "Extractive value of invertebrate biomass\n(Thousand MXP / ha)",
        fill = "Community") +
@@ -259,7 +257,7 @@ fish_inv <- models %>%
 
 ggsave(plot = fish_inv,
        file = here("results", "img", "fish_vs_invert.png"),
-       width = 5,
+       width = 6,
        height = 4)
 
 # Table
@@ -357,51 +355,11 @@ biomass_value %>%
                 width = 0.5) +
   facet_wrap(~community, scales = "free_x", ncol = 3) +
   coord_flip() +
-  scale_fill_brewer(palette = "Set1") +
+  scale_fill_brewer(palette = "Set2") +
   labs(x = "Taxonomic family",
        y = "Value of biomass (Thousand MXP / ha)",
        fill = "Group") +
   theme_bw()
 
-
-
-
-
-
-# This shows that Banco Chinchorro only has one transect with invert biomass in the control site of 2019. It shuld have more, even with zeroes.
-
-filter(
-  invert_biomass,
-  community == "Banco Chinchorro",
-  group == "Invertebrado",
-  zone == "Control",
-  year == 2019
-)
-
-filter(
-  invert_dens,
-  community == "Banco Chinchorro",
-  group == "Invertebrado",
-  zone == "Control",
-  year == 2019
-)
-
-
-
-filter(
-  clean_inverts,
-  community == "Banco Chinchorro",
-  group == "Invertebrado",
-  zone == "Control",
-  year == 2019
-) %>% 
-  View()
-
-
-
-
-
-
-# Reference value plot
 
 

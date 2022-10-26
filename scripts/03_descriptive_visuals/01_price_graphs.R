@@ -30,14 +30,14 @@ ts_plot <-
     y = def_price,
     color = group,
   )) +
-  stat_summary(fun = "mean", geom = "line") +
+  stat_summary(fun = "mean", geom = "line", size = 1) +
   labs(x = "Year",
        y = bquote("Mean annual ex-vessel price (MXP"[2019] ~ "/ Kg)")) +
   theme_bw() +
   theme(legend.position = "None",
         strip.background = element_blank(), strip.text = element_text(size = 8)) +
   guides(color = guide_legend("Family")) +
-  scale_color_brewer(palette = "Set1") +
+  scale_color_brewer(palette = "Set2") +
   facet_wrap(~family, ncol = 3, scales = "free_y")
 
 
@@ -51,7 +51,7 @@ values_plot <- family_prices %>%
                 width = 0.5) +
   geom_point(aes(y = median_price)) +
   coord_flip() +
-  scale_fill_brewer(palette = "Set1", direction = 01) +
+  scale_fill_brewer(palette = "Set2", direction = 01) +
   labs(x = "Family",
        y = bquote("Mean ex-vessel price (MXP"[2019] ~ "/ Kg)")) +
   theme_bw() +
