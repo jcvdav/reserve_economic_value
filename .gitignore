@@ -39,3 +39,4 @@ vignettes/*.pdf
 .Renviron
 *.zip
 .DS_Store
+docs/
