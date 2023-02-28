@@ -1,6 +1,6 @@
 {
   "R": {
-    "Version": "4.2.1",
+    "Version": "4.2.2",
     "Repositories": [
       {
         "Name": "CRAN",
@@ -135,17 +135,6 @@
       "Hash": "543776ae6848fde2f48ff3816d0628bc",
       "Requirements": []
     },
-    "bayestestR": {
-      "Package": "bayestestR",
-      "Version": "0.13.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "caecf6cf095962f3d6645ddab4c691e8",
-      "Requirements": [
-        "datawizard",
-        "insight"
-      ]
-    },
     "bit": {
       "Package": "bit",
       "Version": "4.0.4",
@@ -242,16 +231,6 @@
       "Requirements": [
         "rematch",
         "tibble"
-      ]
-    },
-    "checkmate": {
-      "Package": "checkmate",
-      "Version": "2.1.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "147e4db6909d8814bb30f671b49d7e06",
-      "Requirements": [
-        "backports"
       ]
     },
     "class": {
@@ -357,16 +336,6 @@
       "Repository": "CRAN",
       "Hash": "b9b912b41064aaa79270f24d123c887d",
       "Requirements": []
-    },
-    "datawizard": {
-      "Package": "datawizard",
-      "Version": "0.6.3",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "2970cca4f4b00f5b392d871e18e3194c",
-      "Requirements": [
-        "insight"
-      ]
     },
     "dbplyr": {
       "Package": "dbplyr",
@@ -579,20 +548,22 @@
     },
     "ggplot2": {
       "Package": "ggplot2",
-      "Version": "3.3.6",
+      "Version": "3.4.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "0fb26d0674c82705c6b701d1a61e02ea",
+      "Hash": "d494daf77c4aa7f084dbbe6ca5dcaca7",
       "Requirements": [
         "MASS",
-        "digest",
+        "cli",
         "glue",
         "gtable",
         "isoband",
+        "lifecycle",
         "mgcv",
         "rlang",
         "scales",
         "tibble",
+        "vctrs",
         "withr"
       ]
     },
@@ -738,13 +709,14 @@
     },
     "htmltools": {
       "Package": "htmltools",
-      "Version": "0.5.3",
+      "Version": "0.5.4",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "6496090a9e00f8354b811d1a2d47b566",
+      "Hash": "9d27e99cc90bd701c0a7a63e5923f9b7",
       "Requirements": [
         "base64enc",
         "digest",
+        "ellipsis",
         "fastmap",
         "rlang"
       ]
@@ -773,14 +745,6 @@
         "openssl",
         "uuid"
       ]
-    },
-    "insight": {
-      "Package": "insight",
-      "Version": "0.18.6",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "49a5e2067c566cb61060614883f999e7",
-      "Requirements": []
     },
     "isoband": {
       "Package": "isoband",
@@ -969,25 +933,6 @@
         "vctrs"
       ]
     },
-    "modelsummary": {
-      "Package": "modelsummary",
-      "Version": "1.1.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "de9661d542239082318171a7ebbfec06",
-      "Requirements": [
-        "broom",
-        "checkmate",
-        "data.table",
-        "generics",
-        "glue",
-        "insight",
-        "kableExtra",
-        "parameters",
-        "performance",
-        "tables"
-      ]
-    },
     "munsell": {
       "Package": "munsell",
       "Version": "0.5.0",
@@ -1026,28 +971,14 @@
         "askpass"
       ]
     },
-    "parameters": {
-      "Package": "parameters",
-      "Version": "0.19.0",
+    "pacman": {
+      "Package": "pacman",
+      "Version": "0.5.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "f541e3b038faeec3e40527cc7ca80557",
+      "Hash": "b37932b67288bc62bb81686b2f337a7d",
       "Requirements": [
-        "bayestestR",
-        "datawizard",
-        "insight"
-      ]
-    },
-    "performance": {
-      "Package": "performance",
-      "Version": "0.10.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "e56d92c33a727d4232409735f9e7dd33",
-      "Requirements": [
-        "bayestestR",
-        "datawizard",
-        "insight"
+        "remotes"
       ]
     },
     "pillar": {
@@ -1201,6 +1132,14 @@
       "Requirements": [
         "tibble"
       ]
+    },
+    "remotes": {
+      "Package": "remotes",
+      "Version": "2.4.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "227045be9aee47e6dda9bb38ac870d67",
+      "Requirements": []
     },
     "renv": {
       "Package": "renv",
@@ -1483,17 +1422,6 @@
       "Hash": "90b28393209827327de889f49935140a",
       "Requirements": [
         "cpp11"
-      ]
-    },
-    "tables": {
-      "Package": "tables",
-      "Version": "0.9.10",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "ed2d1baf1c2e2f4684e3c3971196a19e",
-      "Requirements": [
-        "htmltools",
-        "knitr"
       ]
     },
     "tibble": {
