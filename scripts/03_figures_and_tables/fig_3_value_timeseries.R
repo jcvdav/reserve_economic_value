@@ -18,6 +18,9 @@ pacman::p_load(
   tidyverse
 )
 
+# Source defaults --------------------------------------------------------------
+source(here("scripts","_defaults.R"))
+
 # Load data --------------------------------------------------------------------
 tot_val_ref <- readRDS(here("data", "output_data", "tot_val_ref.rds"))
 

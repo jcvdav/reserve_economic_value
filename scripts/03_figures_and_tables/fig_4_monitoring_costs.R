@@ -19,6 +19,9 @@ pacman::p_load(
   tidyverse
 )
 
+# Source defaults --------------------------------------------------------------
+source(here("scripts","_defaults.R"))
+
 # Load data --------------------------------------------------------------------
 costs <-
   read.csv(here("data", "raw_data", "reserve_cost_per_hectare.csv")) %>%
@@ -57,7 +60,7 @@ p <- plot_grid(total_cost, norm_cost,
 ## EXPORT ######################################################################
 ggsave(
   plot = p,
-  filename = here("results", "img", "fig_4_monitoriong_costs.png"),
+  filename = here("results", "img", "fig_4_monitoring_costs.png"),
   width = 8,
   height = 6
 )

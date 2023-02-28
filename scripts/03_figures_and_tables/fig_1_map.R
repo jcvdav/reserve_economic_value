@@ -22,6 +22,9 @@ pacman::p_load(
   tidyverse
 )
 
+# Source defaults --------------------------------------------------------------
+source(here("scripts","_defaults.R"))
+
 # Load data --------------------------------------------------------------------
 # Site coordinates
 points <- tibble(community = c("Banco Chinchorro",

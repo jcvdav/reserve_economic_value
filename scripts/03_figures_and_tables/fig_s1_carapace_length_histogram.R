@@ -18,6 +18,9 @@ pacman::p_load(
   tidyverse
 )
 
+# Source defaults --------------------------------------------------------------
+source(here("scripts","_defaults.R"))
+
 # Load data --------------------------------------------------------------------
 argus <- read_csv(here("data", "raw_data", "lobster_tl_samples.csv"))
 

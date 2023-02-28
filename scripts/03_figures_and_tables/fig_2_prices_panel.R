@@ -19,6 +19,9 @@ pacman::p_load(
   tidyverse 
 )
 
+# Source defaults --------------------------------------------------------------
+source(here("scripts","_defaults.R"))
+
 # Load data --------------------------------------------------------------------
 prices <-
   read_csv(file = here("data", "processed_data", "prices_ts.csv")) %>% 

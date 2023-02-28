@@ -18,8 +18,11 @@ pacman::p_load(
   tidyverse
 )
 
+# Source defaults --------------------------------------------------------------
+source(here("scripts","_defaults.R"))
+
 # Load data --------------------------------------------------------------------
-biomass_value <- readRDS(file = here("data", "output_data", "biomass_value_by_family.rds"))
+biomass_value <- readRDS(file = here("data", "output_data", "biomass_value_panel.rds"))
 
 
 ## PROCESSING ##################################################################
