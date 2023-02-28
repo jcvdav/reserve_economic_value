@@ -7,7 +7,7 @@ between files. You can execute the entire project by running `make` in your term
 
 Additionally, a DAG is provided:
 
-~[](makefile-dag.png)
+~()[makefile-dag.png]
 
 All packages are listed in the `renv.loc` file. In your R console. You can install
 the exact same packages and versions used in the development of this project by running
