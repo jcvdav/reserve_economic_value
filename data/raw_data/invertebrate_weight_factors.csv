@@ -1,7 +1,7 @@
-﻿taxonomic_group,w_fact,source
-Holothuroidea,280,\cite{chavez2011stock}
-Strongylocentrotus purpuratus,36.8691,"\cite{smith2021variation,dof_erizo}"
-Mesocentrotus franciscanus,179.3426,"\cite{leus2014framework,dof_erizo}"
-Haliotidae,330.323,"\cite{rossetto2013reproductive,dof_abulon}"
-Panulirus argus,388.1196,"\cite{neilson2011assessment,dof_langosta}"
-Panulirus interruptus,395.5002,"\cite{murray1996analysis,dof_langosta}"
+"","taxonomic_group","w_fact"
+"1","Holothuroidea",280
+"2","Strongylocentrotus purpuratus",36.8691098076318
+"3","Mesocentrotus franciscanus",179.342564919271
+"4","Haliotidae",330.322951551878
+"5","Panulirus argus",388.119599047348
+"6","Panulirus interruptus",395.500245051607
