@@ -1,23 +1,29 @@
-######################################################
-#title#
-######################################################
+################################################################################
+# title
+################################################################################
 #
-# Purpose
+# Juan Carlos Villaseñor-Derbez
+# juancvd@stanford.edu
+# date
 #
-######################################################
+# Description
+#
+################################################################################
 
+## SET UP ######################################################################
 
-# SET UP #######################################################################
-# Load libraries
+# Load packages ----------------------------------------------------------------
+
 library(here)
 library(tidyverse)
 
-# Load data
+# Load data --------------------------------------------------------------------
 landings <-
   read_csv(here("data", "raw_data", "mex_anual_landings_by_vessel.csv"))
 
 mex_cpi <- read_csv(here("data", "processed_data", "mex_cpi.csv"))
 
+# Define variables -------------------------------------------------------------
 drop_spp <-
   c(
     "ALGAS",
@@ -53,9 +59,9 @@ drop_spp <-
 
 inverts <- c("Haliotidae", "Strongylocentrotidae", "Palinuridae", "Holothuroidea")
 
-# PROCESS ######################################################################
+## PROCESSING ##################################################################
 
-# Filter families we care about
+# Filter families we care about ------------------------------------------------
 prices <- landings %>%
   filter(!main_species_group %in% drop_spp) %>%
   filter(year_cut <= 2019) %>%
@@ -103,7 +109,7 @@ prices <- landings %>%
   left_join(mex_cpi, by = "year") %>%
   mutate(def_price = price * fact)
 
-# Calculate mean value
+# Calculate mean value ---------------------------------------------------------
 family_prices <- prices %>%
   group_by(family, group) %>%
   summarize(
@@ -113,12 +119,11 @@ family_prices <- prices %>%
   ) %>% 
   ungroup()
 
-
-# EXPORT DATA ##################################################################
+## EXPORT ######################################################################
+# Time series of prices --------------------------------------------------------
 write_csv(x = prices,
           file = here("data", "processed_data", "prices_ts.csv"))
 
+# Prices by family -------------------------------------------------------------
 write_csv(x = family_prices,
           file = here("data", "processed_data", "family_prices.csv"))
-
-# END OF SCRIPT ################################################################
