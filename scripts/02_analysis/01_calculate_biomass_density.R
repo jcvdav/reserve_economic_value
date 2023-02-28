@@ -1,21 +1,31 @@
-######################################################
-#title#
-######################################################
-# 
-# Purpose
+################################################################################
+# title
+################################################################################
 #
-######################################################
+# Juan Carlos Villaseñor-Derbez
+# juancvd@stanford.edu
+# date
+#
+# Description
+#
+################################################################################
 
-library(here)
-library(tidyverse)
+## SET UP ######################################################################
 
-# Load data
+# Load packages ----------------------------------------------------------------
+pacman::p_load(
+  here,
+  tidyverse
+)
+
+# Load data --------------------------------------------------------------------
+# Transect data
 clean_fish <- read_csv(file = here("data", "processed_data", "clean_fish_transects.csv")) 
 clean_inverts <- read_csv(file = here("data", "processed_data", "clean_invertebrate_transects.csv")) 
 
+# Length-weight and weight factors
 lw <- read_csv(file = here("data", "processed_data", "length_weight_parameters.csv"))
-dens_weight_inverts <- read.csv(here("data", "raw_data", "invertebrate_weight_factors.csv")) %>% 
-  select(-source)
+dens_weight_inverts <- read.csv(here("data", "raw_data", "invertebrate_weight_factors.csv"))
 
 family_prices <-
   read_csv(file = here("data", "processed_data", "family_prices.csv")) %>% 
@@ -27,8 +37,9 @@ family <-
   read_csv(file = here("data", "processed_data", "family_names.csv")) %>% 
   select(family, species)
 
-# PROCESSING ###################################################################
-# Fish
+## PROCESSING ##################################################################
+
+# Fish biomass -----------------------------------------------------------------
 biomass <- clean_fish %>% 
   left_join(family, by = "species") %>% 
   filter(family %in% families) %>%
@@ -43,7 +54,8 @@ biomass <- clean_fish %>%
   ungroup() %>% 
   select(-c(biomass_g_m2, biomass_kg_m2))
 
-# Inverts
+
+# Invertebrate biomass ---------------------------------------------------------
 invert_dens <- clean_inverts %>% 
   filter(family %in% families) %>%
   left_join(dens_weight_inverts, by = c("species" = "taxonomic_group")) %>% 
@@ -59,10 +71,11 @@ invert_dens <- clean_inverts %>%
   ungroup() %>% 
   select(-c(biomass_g_m2, biomass_kg_m2))
 
-
+## EXPORT ######################################################################
+# Fish biomass -----------------------------------------------------------------
 write_csv(x = biomass,
           file = here("data", "processed_data", "fish_biomass_by_species.csv"))
-
+# Invert biomass ---------------------------------------------------------------
 write_csv(x = invert_dens,
           file = here("data", "processed_data", "invertebrate_biomass_by_species.csv"))
   
