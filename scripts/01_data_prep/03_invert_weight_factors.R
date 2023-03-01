@@ -19,6 +19,11 @@ pacman::p_load(
   tidyverse
 )
 
+# Cucumber ---------------------------------------------------------------------
+# Chavez http://calcofi.org/publications/calcofireports/v52/Vol_52_136-147.Chavez.pdf
+cucumber <- 280 #(Weight at first catch)
+
+
 # Purple sea urchin (S. purpuratus) --------------------------------------------
 #  data from Smith et al., 2021 at https://peerj.com/articles/11352/
 urchin <- read.csv(
@@ -40,10 +45,6 @@ s_purp <- a * (45 ^ b)
 # Data from Leus et al., 2014 at https://puha.org/wp-content/uploads/2017/11/2013-Framework-for-Estimating-Quota-Options-for-the-RSU-Fishery.pdf
 # Factor using the 80 mm minium catch size
 m_frans <- 0.0012659 * (80 ^ 2.7068)
-
-# Cucumber ---------------------------------------------------------------------
-# Chavez http://calcofi.org/publications/calcofireports/v52/Vol_52_136-147.Chavez.pdf
-cucumber <- 280 #(Weight at first catch)
 
 # Abalone
 # Data from Rosetto et al., athttps://bioone.org/journals/journal-of-shellfish-research/volume-32/issue-1/035.032.0122/Reproductive-Potential-Can-Predict-Recruitment-Rates-in-Abalone/10.2983/035.032.0122.full

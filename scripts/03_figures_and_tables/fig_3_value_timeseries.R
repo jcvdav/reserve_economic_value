@@ -31,7 +31,7 @@ biomass_by_transect <- readRDS(here("data", "output_data", "summarized_biomass_v
 # Time series ------------------------------------------------------------------
 value_ts <- ggplot(data = biomass_by_transect,
                    mapping = aes(x = year,
-                                 y = value_mxp_hect,
+                                 y = value_MXN_hect,
                                  color = group,
                                  fill = group,
                                  linetype = zone)) +
@@ -39,7 +39,7 @@ value_ts <- ggplot(data = biomass_by_transect,
   stat_summary(geom = "point", fun = mean) +
   stat_summary(geom = "line", fun = mean) +
   geom_point(data = tot_val_ref,
-             aes(y = ref_value_mxp_hect, color = group),
+             aes(y = ref_value_MXN_hect, color = group),
              pch = 21,
              fill = "transparent",
              size = 4) +
@@ -49,7 +49,7 @@ value_ts <- ggplot(data = biomass_by_transect,
   scale_linetype_manual(values = c("dashed", "solid")) +
   theme(legend.position = "bottom") +
   labs(x = "Year",
-       y = "Value (Thousand MXP / ha)",
+       y = "Value (Thousand MXN / ha)",
        linetype = "Zone",
        fill = "Group",
        color = "Group")

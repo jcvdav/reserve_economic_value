@@ -46,7 +46,7 @@ ts_plot <-
                fun = "mean",
                linewidth = 0.5) +
   labs(x = "Year",
-       y = bquote("Mean annual ex-vessel price (MXP"[2019] ~ "/ Kg)")) +
+       y = bquote("Mean annual ex-vessel price (MXN"[2019] ~ "/ Kg)")) +
   theme(legend.position = "None") +
   guides(color = guide_legend("Family")) +
   scale_color_manual(values = palette) +
@@ -56,11 +56,13 @@ ts_plot <-
 values_plot <- prices %>%
   mutate(family = fct_reorder(family, price, .fun = "mean")) %>%
   ggplot(aes(x = family, y = price, fill = group)) +
-  geom_boxplot() +
+  geom_boxplot(outlier.size = 0.5) +
+  stat_summary(geom = "point",
+               fun = "mean") +
   coord_flip() +
   scale_fill_manual(values = palette) +
   labs(x = "Family",
-       y = bquote("Mean ex-vessel price (MXP"[2019] ~ "/ Kg)")) +
+       y = bquote("Mean ex-vessel price (MXN"[2019] ~ "/ Kg)")) +
   theme_bw() +
   guides(fill = guide_legend("Group")) +
   theme(

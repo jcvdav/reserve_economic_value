@@ -1,7 +1,7 @@
-﻿taxonomic_group,w_fact,source
-Holothuroidea,280,\cite{chavez2011stock}
-Strongylocentrotus purpuratus,36.8691,"\cite{smith2021variation,dof_erizo}"
-Mesocentrotus franciscanus,179.3426,"\cite{leus2014framework,dof_erizo}"
-Haliotidae,330.323,"\cite{rossetto2013reproductive,dof_abulon}"
-Panulirus argus,388.1196,"\cite{neilson2011assessment,dof_langosta}"
-Panulirus interruptus,395.5002,"\cite{murray1996analysis,dof_langosta}"
+﻿taxonomic_group,ref_size,w_fact,source
+Holothuroidea,-,280,Weight at first capture from \cite{ChavEz2011-eu}
+Strongylocentrotus purpuratus,45,36.8691,"Minimum catch size (test diameter) from fisheries regulation \citep{Nom-007-sagpesc-20152015-yz}, allometric parameters estimated from data reported by \cite{Smith2021-ya}"
+Mesocentrotus franciscanus,80,179.3426,"Minimum catch size (test diameter) from fisheries regulation \citep{Nom-007-sagpesc-20152015-yz}, allometric parameters from \cite{Leus2013-ta}"
+Haliotidae,136,330.323,"Minimum catch size from regulation \citep{Dof1987-oc}, allometric parameters from \cite{Rossetto2013-ba}"
+Panulirus argus,223,388.1196,"Minimum total length (equivalent to 135 mm abdominal length or 74.6 mm in cephalothoracic length) reported in the regulation \citep{Nom-006-sagpesc-20162016-ls}, allometric parameters from \cite{Neilson2011-yi}"
+Panulirus interruptus,175,395.5002,"Minimum andominal length (equivalent 82.5 mm in cephalothoracic length) reported in the regulation \citep{Nom-006-sagpesc-20162016-ls}, allometric parameters from \cite{Murray1996-cf}"

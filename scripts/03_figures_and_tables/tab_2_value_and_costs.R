@@ -36,12 +36,12 @@ values <- value_of_reserves %>%
   ungroup()
 
 costs <- cost_of_reserves %>% 
-  select(community, cost_mxp_ha)
+  select(community, cost_MXN_ha)
 
 table_data <- values %>% 
   left_join(costs, by = "community") %>% 
   mutate_if(is.numeric, round, digits = 2) %>% 
-  mutate(pct = (cost_mxp_ha / (value * 1e3)),
+  mutate(pct = (cost_MXN_ha / (value * 1e3)),
          pct = scales::percent(x = pct, accuracy = 0.01))
 
 ## BUILD AND EXPORT TABLE ######################################################
@@ -53,8 +53,8 @@ kable(table_data,
       in pesos per hectare.",
       col.names = c(
         "Community",
-        "Extractive value (Thousand MXP / ha)",
-        "Monitoring costs (MXP / ha)",
+        "Extractive value (Thousand MXN / ha)",
+        "Monitoring costs (MXN / ha)",
         "% of Value"),
       format = "latex",
       linesep = "",

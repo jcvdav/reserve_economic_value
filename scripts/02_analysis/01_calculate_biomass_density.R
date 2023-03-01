@@ -44,8 +44,8 @@ biomass <- clean_fish %>%
   left_join(family, by = "species") %>% 
   filter(family %in% families) %>%
   left_join(lw, by = "species") %>% 
-  mutate(large = 1 * (size >= 21),
-         w = (a * (size ^ b)) * large,
+  filter(size >= 21) %>% 
+  mutate(w = (a * (size ^ b)),
          biomass = abundance * w) %>% 
   group_by(year, community, site, zone, transect, group, family) %>% 
   summarize(biomass_g_m2 = sum(biomass, na.rm = T) / 60,

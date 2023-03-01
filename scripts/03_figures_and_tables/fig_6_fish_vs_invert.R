@@ -51,8 +51,8 @@ fish_inv <- ggplot(data = plot_data,
   geom_point(shape = 21,
              size = 3) +
   scale_fill_brewer(palette = "Set1") +
-  labs(x = "Extractive value of finfish biomass\n(Thousand MXP / ha)",
-       y = "Extractive value of invertebrate biomass\n(Thousand MXP / ha)",
+  labs(x = "Extractive value of finfish biomass\n(Thousand MXN / ha)",
+       y = "Extractive value of invertebrate biomass\n(Thousand MXN / ha)",
        fill = "Community") 
   
 

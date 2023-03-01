@@ -54,13 +54,15 @@ kable(x = table_data,
         "Group",
         "Family",
         "Group in CONAPESCA database",
-        "Mean price (MXP / Kg)"),
+        "Mean price (MXN / Kg)"),
       format = "latex",
       linesep = "",
       booktabs = TRUE)%>%
   kable_styling(latex_options = "HOLD_position") %>% 
-  column_spec(column = c(1, 2, 4),
-              width = "7em") %>% 
+  column_spec(column = c(1, 4),
+              width = "5em") %>% 
+  column_spec(column = 2,
+              width = "10em") %>% 
   column_spec(column = c(3),
               width = "14em") %>% 
   collapse_rows(columns = 1) %>% 

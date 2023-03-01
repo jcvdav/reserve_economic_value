@@ -36,22 +36,25 @@ percents <- value_of_reserves %>%
 table_data <- value_of_reserves %>% 
   select(community, group, value, estimate, std.error, p.val.stars) %>% 
   mutate_if(is.numeric, round, digits = 2) %>% 
-  mutate(estimate = paste0(estimate, " (± ", std.error, ")", p.val.stars)) %>% 
+  mutate(estimate = ifelse(!estimate == 0,
+                           paste0(estimate, " (± ", std.error, ")", p.val.stars), 
+                           "-")) %>% 
   select(community, group, value, estimate) %>% 
   pivot_wider(names_from = value,
               values_from = estimate) %>% 
-left_join(percents, by = c("community", "group"))
+  left_join(percents, by = c("community", "group")) %>% 
+  arrange(community)
 
 ## BUILD AND EXPORT TABLE ######################################################
 kable(x = table_data,
       label = "extractive_value",
-      caption = "Sustainable extractive value (thousand MXP / ha) for marine
+      caption = "Value of biomass (thousand MXN / ha) for marine
       reserves in each community. The columns with numeric values show the total
       value of biomass contained within the reserve, the historical minimum
       observed, and the extractive value (difference between total and
-      historical). The last column shows the proportion of the total.
-      Communities are ordered in ascending order based on the sum of their
-      extractive value.",
+      historical). The last column shows the proportion of the total. Numbers in
+      parentheses are robust standard errors, and asterisks indicate statistical
+      significance (***: p < 0.001; **: p < 0.01; and *: p < 0.1).",
       col.names = c("Community",
                     "Group",
                     "Total value",

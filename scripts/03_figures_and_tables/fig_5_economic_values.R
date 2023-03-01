@@ -41,7 +41,7 @@ p <- ggplot(value_of_reserves %>%
   theme(legend.position = c(1,1),
         legend.justification = c(1, 1),
         axis.title.y = element_blank()) +
-  labs(x = "Value of biomass (Thousand MXP / ha)",
+  labs(x = "Value of biomass (Thousand MXN / ha)",
        fill = "Group")
 
 ## EXPORT ######################################################################

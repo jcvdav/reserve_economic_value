@@ -40,12 +40,12 @@ prices <-
 # For fish
 fish_biomass_value <- fish_biomass %>%
   left_join(prices, by = c("family", "group")) %>%
-  mutate(value_mxp_hect = mean_price * biomass_kg_hect)
+  mutate(value_MXN_hect = mean_price * biomass_kg_hect)
 
 # For inverts
 invert_biomass_value <- invert_biomass %>%
   left_join(prices, by = c("family", "group")) %>%
-  mutate(value_mxp_hect = mean_price * biomass_kg_hect)
+  mutate(value_MXN_hect = mean_price * biomass_kg_hect)
 
 # Combine all data sets
 biomass_value <- rbind(fish_biomass_value, invert_biomass_value) %>% 
@@ -59,7 +59,7 @@ biomass_by_transect <- biomass_value %>%
   group_by(year, community, site, zone, group, transect) %>%
   summarize(
     biomass_kg_hect = sum(biomass_kg_hect, na.rm = T),
-    value_mxp_hect = sum(value_mxp_hect, na.rm = T) / 1000) %>% 
+    value_MXN_hect = sum(value_MXN_hect, na.rm = T) / 1000) %>% 
   ungroup()
 
 ## EXPORT ######################################################################

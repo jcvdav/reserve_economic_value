@@ -31,12 +31,12 @@ biomass_by_community <- biomass_by_transect %>%
   summarize(
     biomass_kg_hect_sd = sd(biomass_kg_hect),
     biomass_kg_hect = mean(biomass_kg_hect),
-    value_mxp_hect_ci_low = quantile(value_mxp_hect, probs = 0.025),
-    value_mxp_hect_ci_high = quantile(value_mxp_hect, probs = 0.975),
-    sd_value_mxp_hect = sd(value_mxp_hect),
-    value_mxp_hect = mean(value_mxp_hect),
+    value_MXN_hect_ci_low = quantile(value_MXN_hect, probs = 0.025),
+    value_MXN_hect_ci_high = quantile(value_MXN_hect, probs = 0.975),
+    sd_value_MXN_hect = sd(value_MXN_hect),
+    value_MXN_hect = mean(value_MXN_hect),
     n_obs = n(),
-    std.error = sd_value_mxp_hect / sqrt(n_obs - 1)
+    std.error = sd_value_MXN_hect / sqrt(n_obs - 1)
   ) %>%
   ungroup()
 
@@ -46,22 +46,15 @@ tot_val_ref <- biomass_by_community %>%
   mutate(year_min = min(year)) %>% 
   ungroup() %>% 
   filter((year < 2019 & zone == "Control") | (zone == "Reserve" & year == year_min)) %>% 
-  filter(value_mxp_hect > 0) %>%
+  filter(value_MXN_hect > 0) %>%
   group_by(community, group) %>% 
-  mutate(val_min = min(value_mxp_hect)) %>% 
+  mutate(val_min = min(value_MXN_hect)) %>% 
   ungroup() %>% 
-  filter(value_mxp_hect == val_min) %>% 
-  select(community, group, zone, year, ref_value_mxp_hect = value_mxp_hect) %>% 
+  filter(value_MXN_hect == val_min) %>% 
+  select(community, group, zone, year, ref_value_MXN_hect = value_MXN_hect) %>% 
   arrange(community, group) %>% 
   mutate(id2 = paste(community, group, zone, year, sep = "-"),
          type = "Reference")
-
-# Calculate total value of biomass in the reserves -----------------------------
-# tot_val_data <- biomass_by_community %>%
-  # filter(zone == "Reserve",
-         # year == 2019) %>% 
-  # mutate(id2 = paste(community, group, zone, year, sep = "-"),
-         # type = "Latest")
 
 # Now calculate the extractive value -------------------------------------------
 # First, find the reference points (combination of community, group, zone and year)
@@ -77,12 +70,12 @@ estimation_data <- biomass_by_transect %>%
          subgroup = paste(community, group))
 
 # Regressions ------------------------------------------------------------------
-total_value_models <- feols(fml = value_mxp_hect ~ 0 + today,
+total_value_models <- feols(fml = value_MXN_hect ~ 0 + today,
                            data = estimation_data,
                            split = ~subgroup,
                            vcov = "hetero")
 
-extractive_value_models <- feols(fml = value_mxp_hect ~ today,
+extractive_value_models <- feols(fml = value_MXN_hect ~ today,
                                  data = estimation_data,
                                  split = ~subgroup,
                                  vcov = "hetero")
@@ -123,3 +116,6 @@ saveRDS(obj = extractive_value_models,
 # Table with coefficients ------------------------------------------------------
 saveRDS(obj = value_of_reserves,
         file = here("data", "output_data", "value_of_reserves.rds"))
+# Tot val ref ------------------------------------------------------------------
+saveRDS(obj = tot_val_ref,
+        here("data", "output_data", "tot_val_ref.rds"))
