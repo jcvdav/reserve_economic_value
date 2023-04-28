@@ -26,6 +26,10 @@ pacman::p_load(
 source(here("scripts","_defaults.R"))
 
 # Load data --------------------------------------------------------------------
+# Size data
+costs <-
+  read.csv(here("data", "raw_data", "reserve_cost_per_hectare.csv")) %>%
+  select(community, ha)
 # Site coordinates
 points <- tibble(community = c("Banco Chinchorro",
                                "Maria Elena",
@@ -44,7 +48,8 @@ points <- tibble(community = c("Banco Chinchorro",
                          -113.7446934, -111.3873554, -112.3128677)) %>% 
   arrange(lon) %>% 
   mutate(id = 1:9) %>% 
-  mutate(community = fct_relevel(community, com_order))
+  mutate(community = fct_relevel(community, com_order)) %>% 
+  left_join(costs, by = "community")
 
 # Mexico's coastline
 mex <- ne_countries(country = "Mexico",
@@ -70,10 +75,9 @@ map <- ggplot() +
           fill = "gray80",
           linewidth = 0.5) +
   geom_point(data = points, 
-             aes(x = lon, y = lat, fill = community),
+             aes(x = lon, y = lat, fill = community, size = ha),
              shape = 21,
-             color = "black",
-             size = 2) +
+             color = "black") +
   geom_text_repel(data = points, 
                   mapping = aes(x = lon, y = lat, label = id),
                   min.segment.length = 0,
@@ -89,7 +93,9 @@ map <- ggplot() +
                                          colour = "black",
                                          linewidth = 0.1)) +
   guides(fill = guide_legend(title = "Community",
-                             ncol = 2)) +
+                             ncol = 2),
+         size = guide_legend(title = "Size (hectares)",
+                             ncol = 4)) +
   labs(x = "Longitude",
        y = "Latitude")
 
