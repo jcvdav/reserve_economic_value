@@ -22,7 +22,8 @@ pacman::p_load(
 source(here("scripts","_defaults.R"))
 
 # Load data --------------------------------------------------------------------
-value_of_reserves <- readRDS(file = here("data", "output_data", "value_of_reserves.rds"))
+value_of_reserves <- readRDS(file = here("data", "output_data", "value_of_reserves.rds")) %>% 
+  mutate(type = ifelse(type == "Total", "a", "b"))
 
 ## VISUALIZE ###################################################################
 p <- ggplot(value_of_reserves %>% 
@@ -40,7 +41,8 @@ p <- ggplot(value_of_reserves %>%
   facet_wrap(~type) +
   theme(legend.position = c(1,1),
         legend.justification = c(1, 1),
-        axis.title.y = element_blank()) +
+        axis.title.y = element_blank(),
+        strip.text = element_text(face = "bold", size = 14)) +
   labs(x = "Value of biomass (Thousand MXN / ha)",
        fill = "Group")
 
