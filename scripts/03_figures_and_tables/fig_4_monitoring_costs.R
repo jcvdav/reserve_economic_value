@@ -52,7 +52,7 @@ norm_cost <- ggplot(
   coord_flip()
 
 # Combine into a panel
-p <- plot_grid(total_cost, norm_cost,
+p <- plot_grid(norm_cost, total_cost,
                ncol = 2,
                labels = "auto")
 

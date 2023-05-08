@@ -58,6 +58,10 @@ fish <-
     species = str_to_sentence(species),
     species = str_trim(species),
     species = case_when(                                                        # Rename some species
+      species == "Rhacochilus vacca" ~ "Phanerodon vacca",
+      species == "Rhinobatos productus" ~ "Pseudobatos productus",
+      species == "Dasyatis dipterura" ~ "Hypanus dipterurus",
+      species == "Dasyatis americana" ~ "Hypanus americanus",
       species == "Damisela spp" ~ "Chromis spp",
       species == "Lancero spp" ~ "Acanthurus spp",
       species == "Loro spp" ~ "Scarus spp",
@@ -125,7 +129,7 @@ fish_completed <- fish_transect_by_com_year %>%
             by = c("year", "community", "site", "zone", "transect", "species")) %>% 
   replace_na(replace = list(abundance = 0)) %>%
   mutate(genus = str_extract(species, "[:alpha:]+"),
-         group = "Escama")
+         group = "Finfish")
 
 
 
@@ -232,7 +236,7 @@ invert_completed <- invert_transect_by_com_year %>%
             by = c("year", "community", "site", "zone", "transect", "species")) %>% 
   replace_na(replace = list(abundance = 0)) %>%
   mutate(genus = str_extract(species, "[:alpha:]+"),
-         group = "Invertebrado")
+         group = "Invertebrate")
 
 
 

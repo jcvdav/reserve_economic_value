@@ -14,8 +14,10 @@
 
 # Load packages ----------------------------------------------------------------
 
-library(here)
-library(tidyverse)
+pacman::p_load(
+  here,
+  tidyverse
+)
 
 # Load data --------------------------------------------------------------------
 landings <-
@@ -75,7 +77,7 @@ prices <- landings %>%
       main_species_group == "JUREL" ~ "Carangidae",
       main_species_group == "PETO" ~ "Scombridae",
       main_species_group == "BESUGO" ~ "Sparidae",
-      main_species_group == "CORVINA" ~ "Scianidae",
+      main_species_group == "CORVINA" ~ "Sciaenidae",
       main_species_group == "PARGO" ~ "Lutjanidae",
       main_species_group == "LEBRANCHA" ~ "Mugilidae",
       main_species_group == "PIERNA" ~ "Latilidae",
@@ -86,7 +88,7 @@ prices <- landings %>%
       main_species_group == "ATUN" ~ "Scombridae",
       main_species_group == "RONCO" ~ "Haemulidae",
       main_species_group == "PAMPANO" ~ "Carangidae",
-      main_species_group == "BERRUGATA" ~ "Scianidae",
+      main_species_group == "BERRUGATA" ~ "Sciaenidae",
       main_species_group == "BARRILETE" ~ "Scombridae",
       main_species_group == "BONITO" ~ "Scombridae",
       main_species_group == "BAQUETA" ~ "Serranidae",
@@ -96,7 +98,7 @@ prices <- landings %>%
       main_species_group == "LANGOSTA" ~ "Palinuridae",
       main_species_group == "PEPINO DE MAR" ~ "Holothuroidea"
     ),
-    group = ifelse(family %in% inverts, "Invertebrado", "Escama")
+    group = ifelse(family %in% inverts, "Invertebrate", "Finfish")
   ) %>%
   drop_na(value) %>%
   drop_na(landed_weight) %>%
@@ -119,11 +121,18 @@ family_prices <- prices %>%
   ) %>% 
   ungroup()
 
+gsb <- family_prices %>% 
+  filter(family == "Serranidae") %>% 
+  mutate(family = "Polyprionidae")
+
+family_prices_out <- bind_rows(family_prices,
+                               gsb)
+
 ## EXPORT ######################################################################
 # Time series of prices --------------------------------------------------------
 write_csv(x = prices,
           file = here("data", "processed_data", "prices_ts.csv"))
 
 # Prices by family -------------------------------------------------------------
-write_csv(x = family_prices,
+write_csv(x = family_prices_out,
           file = here("data", "processed_data", "family_prices.csv"))

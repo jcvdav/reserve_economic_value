@@ -15,9 +15,6 @@
 # Load packages ----------------------------------------------------------------
 pacman::p_load(
   here,
-  cowplot,
-  ggrepel,
-  ggridges,
   tidyverse 
 )
 
@@ -39,23 +36,21 @@ prices <-
 # Value of biomass -------------------------------------------------------------
 # For fish
 fish_biomass_value <- fish_biomass %>%
-  left_join(prices, by = c("family", "group")) %>%
+  inner_join(prices, by = c("family", "group")) %>%
   mutate(value_MXN_hect = mean_price * biomass_kg_hect)
 
 # For inverts
 invert_biomass_value <- invert_biomass %>%
-  left_join(prices, by = c("family", "group")) %>%
+  inner_join(prices, by = c("family", "group")) %>%
   mutate(value_MXN_hect = mean_price * biomass_kg_hect)
 
 # Combine all data sets
 biomass_value <- rbind(fish_biomass_value, invert_biomass_value) %>% 
-  mutate(group = ifelse(group == "Escama", "Finfish", "Invertebrate"),
-         zone = str_replace(zone, "Reserva", "Reserve")) %>% 
+  mutate(zone = str_replace(zone, "Reserva", "Reserve")) %>% 
   mutate(community = fct_relevel(community, com_order))
 
 # Now summarize total value by group and by transect ---------------------------
 biomass_by_transect <- biomass_value %>%
-  drop_na(mean_price) %>%
   group_by(year, community, site, zone, group, transect) %>%
   summarize(
     biomass_kg_hect = sum(biomass_kg_hect, na.rm = T),

@@ -17,10 +17,10 @@ pacman::p_load(
   here,
   rfishbase,
   janitor,
-  MPAtools,
   tidyverse  
 )
 
+options(FISHBASE_VERSION = "23.01")
 
 # Load data --------------------------------------------------------------------
 # Inverts
@@ -28,10 +28,6 @@ clean_fish <-
   read_csv(file = here("data", "processed_data", "clean_fish_transects.csv"))
 
 ## PROCESS #####################################################################
-# AB parameters from from MPA tools --------------------------------------------
-abnt <- MPAtools::abnt %>% 
-  select(species = GeneroEspecie, a_mpa = a, b_mpa = b) %>% 
-  distinct()
 
 # Get other parameters from fishbase -------------------------------------------
 # SPecies list
@@ -47,9 +43,6 @@ alo_spp <- length_weight(species_list = spp_list) %>%
   group_by(species) %>% 
   summarize(a = mean(a, na.rm = T),
             b = mean(b, na.rm = T)) %>% 
-  left_join(abnt, by = "species") %>% 
-  mutate(a = coalesce(a, a_mpa),
-         b = coalesce(b, b_mpa)) %>% 
   select(species, a, b)
 
 # Get bayesian estimates

@@ -27,14 +27,8 @@ clean_inverts <- read_csv(file = here("data", "processed_data", "clean_invertebr
 lw <- read_csv(file = here("data", "processed_data", "length_weight_parameters.csv"))
 dens_weight_inverts <- read.csv(here("data", "raw_data", "invertebrate_weight_factors.csv"))
 
-family_prices <-
-  read_csv(file = here("data", "processed_data", "family_prices.csv")) %>% 
-  mutate(group = ifelse(group == "Escama", "Finfish", "Invertebrate"))
-
-families <- unique(family_prices$family)
-
 family <-
-  read_csv(file = here("data", "processed_data", "family_names.csv")) %>% 
+  read_csv(file = here("data", "processed_data", "family_names.csv")) %>%
   select(family, species)
 
 ## PROCESSING ##################################################################
@@ -42,8 +36,7 @@ family <-
 # Fish biomass -----------------------------------------------------------------
 biomass <- clean_fish %>% 
   left_join(family, by = "species") %>% 
-  filter(family %in% families) %>%
-  left_join(lw, by = "species") %>% 
+  inner_join(lw, by = "species") %>%
   filter(size >= 21) %>% 
   mutate(w = (a * (size ^ b)),
          biomass = abundance * w) %>% 
@@ -57,7 +50,7 @@ biomass <- clean_fish %>%
 
 # Invertebrate biomass ---------------------------------------------------------
 invert_dens <- clean_inverts %>% 
-  filter(family %in% families) %>%
+  # filter(family %in% families) %>%
   left_join(dens_weight_inverts, by = c("species" = "taxonomic_group")) %>% 
   left_join(dens_weight_inverts, by = c("family" = "taxonomic_group")) %>% 
   mutate(w_fact =  coalesce(w_fact.x, w_fact.y)) %>% 

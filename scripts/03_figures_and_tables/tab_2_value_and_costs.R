@@ -55,7 +55,7 @@ kable(table_data,
         "Community",
         "Extractive value (Thousand MXN / ha)",
         "Monitoring costs (MXN / ha)",
-        "% of Value"),
+        "Costs as % of Value"),
       format = "latex",
       linesep = "",
       booktabs = TRUE)%>% 
