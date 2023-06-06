@@ -56,6 +56,22 @@ tot_val_ref <- biomass_by_community %>%
   mutate(id2 = paste(community, group, zone, year, sep = "-"),
          type = "Reference")
 
+tot_val_ref2 <- biomass_by_community %>% 
+  group_by(community) %>% 
+  mutate(year_min = min(year)) %>% 
+  ungroup() %>% 
+  filter((year < 2019 & zone == "Control") | (zone == "Reserve" & year == year_min)) %>% 
+  filter(value_MXN_hect > 0) %>%
+  group_by(community, group) %>% 
+  filter(!value_MXN_hect == min(value_MXN_hect)) %>% 
+  mutate(val_min = min(value_MXN_hect)) %>% 
+  ungroup() %>% 
+  filter(value_MXN_hect == val_min) %>% 
+  select(community, group, zone, year, ref_value_MXN_hect = value_MXN_hect) %>% 
+  arrange(community, group) %>% 
+  mutate(id2 = paste(community, group, zone, year, sep = "-"),
+         type = "Reference")
+
 # Now calculate the extractive value -------------------------------------------
 # First, find the reference points (combination of community, group, zone and year)
 references <- tot_val_ref$id2
@@ -119,3 +135,5 @@ saveRDS(obj = value_of_reserves,
 # Tot val ref ------------------------------------------------------------------
 saveRDS(obj = tot_val_ref,
         here("data", "output_data", "tot_val_ref.rds"))
+saveRDS(obj = tot_val_ref2,
+        here("data", "output_data", "tot_val_ref_reviewer.rds"))
