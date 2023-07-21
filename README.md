@@ -1,4 +1,4 @@
-# Code and data for: Operational costs and biomass accrual benefits of community-based marine reserves
+# Code and data for: Biomass accrual benefits of community-based marine protected areas outweigh their operational costs
 
 ## Reproducibility notes
 
