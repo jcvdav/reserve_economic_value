@@ -13,8 +13,14 @@
 ## SET UP ######################################################################
 
 # Load packages ----------------------------------------------------------------
-library(here)
-library(tidyverse)
+pacman::p_load(
+  here,
+  broom,
+  tidyverse
+)
+
+# Source defaults --------------------------------------------------------------
+source(here("scripts","_defaults.R"))
 
 # Load data --------------------------------------------------------------------
 tot_val_ref <- readRDS(here("data", "output_data", "tot_val_ref.rds")) %>%
