@@ -27,7 +27,7 @@ cost_data <- read_csv(here("data", "raw_data", "reserve_cost_per_hectare.csv"))
 plot_data <- cost_data %>% 
   mutate(source = "Community-basde MPAs (Our estimates)") %>% 
   select(source, cost_MXN_ha) %>% 
-  bind_rows(tibble(source = c("Top-down MPAs (Balmford et al., 204)",
+  bind_rows(tibble(source = c("Top-down MPAs (Balmford et al., 2004)",
                               "Top-down MPAs: Mexico (Hayashida et al., 2021)"),
                    cost_MXN_ha = c(155, 0.17))) %>% 
   mutate(source = fct_reorder(source, -cost_MXN_ha, mean))
